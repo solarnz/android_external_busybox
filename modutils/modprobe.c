@@ -481,6 +481,7 @@ int modprobe_main(int argc UNUSED_PARAM, char **argv)
 	int rc;
 	unsigned opt;
 	struct module_entry *me;
+	struct stat info;
 
 	opt_complementary = MODPROBE_COMPLEMENTARY;
 	opt = getopt32(argv, INSMOD_OPTS MODPROBE_OPTS INSMOD_ARGS);
@@ -530,6 +531,13 @@ int modprobe_main(int argc UNUSED_PARAM, char **argv)
 				bb_perror_msg_and_die("rmmod");
 		}
 		return EXIT_SUCCESS;
+	}
+
+	/* Goto modules location */
+	xchdir(CONFIG_DEFAULT_MODULES_DIR);
+	uname(&uts);
+	if (stat(uts.release, &info) == 0) {
+		xchdir(uts.release);
 	}
 
 	/* Retrieve module names of already loaded modules */
