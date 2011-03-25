@@ -1,14 +1,14 @@
 LOCAL_PATH := $(call my-dir)
+include $(CLEAR_VARS)
 
 # Make a static library for clearsilver's regex. This prevents multiple
 # symbol definition error.
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := ../clearsilver/util/regex/regex.c
-LOCAL_MODULE := libclearsilverregex
-LOCAL_C_INCLUDES := \
-	external/clearsilver \
-	external/clearsilver/util/regex
-include $(BUILD_STATIC_LIBRARY)
+# LOCAL_SRC_FILES := ../clearsilver/util/regex/regex.c
+# LOCAL_MODULE := libclearsilverregex
+# LOCAL_C_INCLUDES := \
+# 	external/clearsilver \
+# 	external/clearsilver/util/regex
+# include $(BUILD_STATIC_LIBRARY)
 
 
 SUBMAKE := make -s -C $(LOCAL_PATH) CC=$(CC)
@@ -17,16 +17,14 @@ KERNEL_MODULES_DIR?=/system/modules/lib/modules
 BUSYBOX_SRC_FILES = $(shell cat $(LOCAL_PATH)/busybox-$(BUSYBOX_CONFIG).sources) \
 	libbb/android.c
 
-ifeq ($(strip $(CYANOGEN_BIONIC)),true)
-    ifeq ($(TARGET_ARCH),arm)
-      BUSYBOX_SRC_FILES += \
+ifeq ($(TARGET_ARCH),arm)
+	BUSYBOX_SRC_FILES += \
         android/libc/arch-arm/syscalls/adjtimex.S \
         android/libc/arch-arm/syscalls/getsid.S \
         android/libc/arch-arm/syscalls/stime.S \
         android/libc/arch-arm/syscalls/swapon.S \
         android/libc/arch-arm/syscalls/swapoff.S \
         android/libc/arch-arm/syscalls/sysinfo.S
-    endif
 endif
 
 BUSYBOX_C_INCLUDES = \
@@ -54,7 +52,7 @@ LOCAL_C_INCLUDES := $(BUSYBOX_C_INCLUDES)
 LOCAL_CFLAGS := $(BUSYBOX_CFLAGS)
 LOCAL_MODULE := busybox
 LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
-LOCAL_STATIC_LIBRARIES += libclearsilverregex
+# LOCAL_STATIC_LIBRARIES += libclearsilverregex
 include $(BUILD_EXECUTABLE)
 
 BUSYBOX_LINKS := $(shell cat $(LOCAL_PATH)/busybox-$(BUSYBOX_CONFIG).links)
@@ -90,5 +88,6 @@ LOCAL_CFLAGS += \
   -Dgetmntent=busybox_getmntent \
   -Dgetmntent_r=busybox_getmntent_r
 LOCAL_MODULE := libbusybox
-LOCAL_STATIC_LIBRARIES += libclearsilverregex libcutils libc libm 
+# LOCAL_STATIC_LIBRARIES += libclearsilverregex libcutils libc libm
+LOCAL_STATIC_LIBRARIES += libcutils libc libm
 include $(BUILD_STATIC_LIBRARY)
