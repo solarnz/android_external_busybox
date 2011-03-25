@@ -1,8 +1,9 @@
 LOCAL_PATH := $(call my-dir)
-include $(CLEAR_VARS)
+
 
 # Make a static library for clearsilver's regex. This prevents multiple
-# symbol definition error.
+# symbol definition error.... OR NOT
+# include $(CLEAR_VARS)
 # LOCAL_SRC_FILES := ../clearsilver/util/regex/regex.c
 # LOCAL_MODULE := libclearsilverregex
 # LOCAL_C_INCLUDES := \
@@ -11,7 +12,8 @@ include $(CLEAR_VARS)
 # include $(BUILD_STATIC_LIBRARY)
 
 
-SUBMAKE := make -s -C $(LOCAL_PATH) CC=$(CC)
+SUBMAKE := make -s -C $(LOCAL_PATH) CC=$(CC) 
+
 KERNEL_MODULES_DIR?=/system/lib/modules
 
 BUSYBOX_SRC_FILES = $(shell cat $(LOCAL_PATH)/busybox-$(BUSYBOX_CONFIG).sources) \
