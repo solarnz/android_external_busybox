@@ -72,9 +72,15 @@ static void modinfo(const char *path, const char *version,
 		/* Newer depmod puts relative paths in modules.dep */
 		path = xasprintf("%s/%s/%s", CONFIG_DEFAULT_MODULES_DIR, version, path);
 		the_module = xmalloc_open_zipped_read_close(path, &len);
+		if (!the_module) {
+			path = xasprintf("%s/%s", CONFIG_DEFAULT_MODULES_DIR, path);
+			the_module = xmalloc_open_zipped_read_close(path, &len);
+		}
 		free((char*)path);
-		if (!the_module)
+		if (!the_module) {
+			bb_perror_msg("could not find module");
 			return;
+		}
 	}
 
 	if (field)
@@ -133,9 +139,15 @@ int modinfo_main(int argc UNUSED_PARAM, char **argv)
 
 	uname(&uts);
 	parser = config_open2(
-		xasprintf("%s/%s/%s", CONFIG_DEFAULT_MODULES_DIR, uts.release, CONFIG_DEFAULT_DEPMOD_FILE),
-		xfopen_for_read
+		xasprintf("%s/%s/%s.bb", CONFIG_DEFAULT_MODULES_DIR, uts.release, CONFIG_DEFAULT_DEPMOD_FILE),
+		fopen_for_read
 	);
+	if (!parser) {
+		parser = config_open2(
+			xasprintf("%s/%s.bb", CONFIG_DEFAULT_MODULES_DIR, CONFIG_DEFAULT_DEPMOD_FILE),
+			xfopen_for_read
+		);
+	}
 
 	while (config_read(parser, tokens, 2, 1, "# \t", PARSE_NORMAL)) {
 		colon = last_char_is(tokens[0], ':');
