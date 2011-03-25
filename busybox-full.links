@@ -23,7 +23,6 @@
 /bin/chmod
 /bin/chown
 /sbin/chroot
-/bin/cksum
 /bin/clear
 /bin/cmp
 /bin/cp
@@ -73,6 +72,7 @@
 /sbin/lsmod
 /bin/lspci
 /bin/lsusb
+/bin/lzmacat
 /bin/lzop
 /bin/lzopcat
 /bin/md5sum
@@ -136,6 +136,7 @@
 /bin/tar
 /bin/tee
 /bin/telnet
+/sbin/telnetd
 /bin/test
 /bin/tftp
 /bin/time
@@ -150,6 +151,7 @@
 /bin/uniq
 /bin/unix2dos
 /bin/unxz
+/bin/unlzma
 /bin/unlzop
 /bin/unzip
 /bin/uptime

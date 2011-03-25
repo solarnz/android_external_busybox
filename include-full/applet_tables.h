@@ -1,6 +1,6 @@
 /* This is a generated file, don't edit */
 
-#define NUM_APPLETS 168
+#define NUM_APPLETS 179
 
 const char applet_names[] ALIGN1 = ""
 "[" "\0"
@@ -8,8 +8,10 @@ const char applet_names[] ALIGN1 = ""
 "arp" "\0"
 "ash" "\0"
 "awk" "\0"
+"base64" "\0"
 "basename" "\0"
 "bbconfig" "\0"
+"blockdev" "\0"
 "brctl" "\0"
 "bunzip2" "\0"
 "bzcat" "\0"
@@ -21,7 +23,6 @@ const char applet_names[] ALIGN1 = ""
 "chmod" "\0"
 "chown" "\0"
 "chroot" "\0"
-"cksum" "\0"
 "clear" "\0"
 "cmp" "\0"
 "cp" "\0"
@@ -63,6 +64,7 @@ const char applet_names[] ALIGN1 = ""
 "ifconfig" "\0"
 "insmod" "\0"
 "install" "\0"
+"iostat" "\0"
 "ip" "\0"
 "kill" "\0"
 "killall" "\0"
@@ -73,8 +75,9 @@ const char applet_names[] ALIGN1 = ""
 "losetup" "\0"
 "ls" "\0"
 "lsmod" "\0"
-"lspci" "\0"
 "lsusb" "\0"
+"lzcat" "\0"
+"lzma" "\0"
 "lzop" "\0"
 "lzopcat" "\0"
 "md5sum" "\0"
@@ -90,7 +93,9 @@ const char applet_names[] ALIGN1 = ""
 "more" "\0"
 "mount" "\0"
 "mountpoint" "\0"
+"mpstat" "\0"
 "mv" "\0"
+"nbd-client" "\0"
 "nc" "\0"
 "netstat" "\0"
 "nice" "\0"
@@ -102,7 +107,10 @@ const char applet_names[] ALIGN1 = ""
 "pgrep" "\0"
 "pidof" "\0"
 "ping" "\0"
+"pivot_root" "\0"
 "pkill" "\0"
+"pmap" "\0"
+"powertop" "\0"
 "printenv" "\0"
 "printf" "\0"
 "ps" "\0"
@@ -117,7 +125,6 @@ const char applet_names[] ALIGN1 = ""
 "rmdir" "\0"
 "rmmod" "\0"
 "route" "\0"
-"run-parts" "\0"
 "sed" "\0"
 "seq" "\0"
 "setsid" "\0"
@@ -133,6 +140,7 @@ const char applet_names[] ALIGN1 = ""
 "stty" "\0"
 "swapoff" "\0"
 "swapon" "\0"
+"switch_root" "\0"
 "sync" "\0"
 "sysctl" "\0"
 "tac" "\0"
@@ -140,8 +148,10 @@ const char applet_names[] ALIGN1 = ""
 "tar" "\0"
 "tee" "\0"
 "telnet" "\0"
+"telnetd" "\0"
 "test" "\0"
 "tftp" "\0"
+"tftpd" "\0"
 "time" "\0"
 "top" "\0"
 "touch" "\0"
@@ -153,6 +163,7 @@ const char applet_names[] ALIGN1 = ""
 "uname" "\0"
 "uniq" "\0"
 "unix2dos" "\0"
+"unlzma" "\0"
 "unlzop" "\0"
 "unxz" "\0"
 "unzip" "\0"
@@ -180,8 +191,10 @@ test_main,
 arp_main,
 ash_main,
 awk_main,
+base64_main,
 basename_main,
 bbconfig_main,
+blockdev_main,
 brctl_main,
 bunzip2_main,
 bunzip2_main,
@@ -193,7 +206,6 @@ chgrp_main,
 chmod_main,
 chown_main,
 chroot_main,
-cksum_main,
 clear_main,
 cmp_main,
 cp_main,
@@ -235,6 +247,7 @@ id_main,
 ifconfig_main,
 modprobe_main,
 install_main,
+iostat_main,
 ip_main,
 kill_main,
 kill_main,
@@ -245,8 +258,9 @@ ln_main,
 losetup_main,
 ls_main,
 modprobe_main,
-lspci_main,
 lsusb_main,
+unlzma_main,
+unlzma_main,
 lzop_main,
 lzop_main,
 md5_sha1_sum_main,
@@ -262,7 +276,9 @@ modprobe_main,
 more_main,
 mount_main,
 mountpoint_main,
+mpstat_main,
 mv_main,
+nbdclient_main,
 nc_main,
 netstat_main,
 nice_main,
@@ -274,7 +290,10 @@ patch_main,
 pgrep_main,
 pidof_main,
 ping_main,
+pivot_root_main,
 pgrep_main,
+pmap_main,
+powertop_main,
 printenv_main,
 printf_main,
 ps_main,
@@ -289,7 +308,6 @@ rm_main,
 rmdir_main,
 modprobe_main,
 route_main,
-run_parts_main,
 sed_main,
 seq_main,
 setsid_main,
@@ -305,6 +323,7 @@ strings_main,
 stty_main,
 swap_on_off_main,
 swap_on_off_main,
+switch_root_main,
 sync_main,
 sysctl_main,
 tac_main,
@@ -312,8 +331,10 @@ tail_main,
 tar_main,
 tee_main,
 telnet_main,
+telnetd_main,
 test_main,
 tftp_main,
+tftpd_main,
 time_main,
 top_main,
 touch_main,
@@ -325,6 +346,7 @@ umount_main,
 uname_main,
 uniq_main,
 dos2unix_main,
+unlzma_main,
 lzop_main,
 unxz_main,
 unzip_main,
@@ -353,168 +375,179 @@ const uint16_t applet_nameofs[] ALIGN2 = {
 0x0009,
 0x000d,
 0x0011,
-0x001a,
-0x0023,
-0x0029,
-0x0031,
-0x0037,
-0x003d,
+0x0018,
+0x0021,
+0x002a,
+0x0033,
+0x0039,
 0x0041,
-0x0045,
-0x004a,
-0x0050,
-0x0056,
-0x005c,
-0x0063,
-0x0069,
-0x006f,
+0x0047,
+0x004d,
+0x0051,
+0x0055,
+0x005a,
+0x0060,
+0x0066,
+0x006c,
 0x0073,
-0x0076,
-0x007b,
-0x007f,
-0x0084,
-0x0087,
-0x008a,
+0x0079,
+0x007d,
+0x0080,
+0x0085,
+0x0089,
+0x008e,
 0x0091,
-0x0098,
+0x0094,
 0x009b,
-0x00a0,
-0x00a8,
-0x80ae,
-0x00b3,
-0x00bc,
-0x00bf,
-0x00c4,
-0x00c7,
-0x00cd,
+0x00a2,
+0x00a5,
+0x00aa,
+0x00b2,
+0x80b8,
+0x00bd,
+0x00c6,
+0x00c9,
+0x00ce,
 0x00d1,
-0x00d6,
-0x00dc,
-0x00e2,
-0x00e8,
-0x00ed,
-0x00f3,
-0x00f8,
+0x00d7,
+0x00db,
+0x00e0,
+0x00e6,
+0x00ec,
+0x00f2,
+0x00f7,
 0x00fd,
-0x0109,
-0x010f,
-0x0116,
-0x011b,
-0x0122,
-0x0127,
+0x0102,
+0x0107,
+0x0113,
+0x0119,
+0x0120,
+0x0125,
 0x012c,
-0x0134,
-0x0137,
-0x0140,
-0x0147,
-0x014f,
-0x0152,
-0x0157,
-0x015f,
+0x0131,
+0x0136,
+0x013e,
+0x0141,
+0x014a,
+0x0151,
+0x0159,
+0x0160,
+0x0163,
 0x0168,
-0x016f,
-0x0174,
-0x0177,
-0x017f,
-0x0182,
+0x0170,
+0x0179,
+0x0180,
+0x0185,
 0x0188,
-0x018e,
-0x0194,
+0x0190,
+0x0193,
 0x0199,
-0x01a1,
-0x01a8,
-0x01ae,
-0x01b5,
-0x01bc,
-0x01c6,
-0x01cc,
-0x01d3,
-0x01da,
+0x019f,
+0x01a5,
+0x01aa,
+0x01af,
+0x01b7,
+0x01be,
+0x01c4,
+0x01cb,
+0x01d2,
+0x01dc,
 0x01e2,
-0x01eb,
+0x01e9,
 0x01f0,
-0x01f6,
+0x01f8,
 0x0201,
-0x0204,
-0x0207,
-0x020f,
-0x0214,
-0x021a,
-0x0223,
-0x0228,
-0x022b,
-0x0231,
+0x0206,
+0x020c,
+0x0217,
+0x021e,
+0x0221,
+0x022c,
+0x022f,
 0x0237,
-0x423d,
+0x023c,
 0x0242,
-0x0248,
-0x0251,
-0x0258,
-0x025b,
+0x024b,
+0x0250,
+0x0253,
+0x0259,
 0x025f,
-0x0264,
-0x026d,
-0x0276,
-0x027d,
-0x0283,
-0x0287,
-0x028a,
-0x0290,
-0x0296,
+0x4265,
+0x026a,
+0x0275,
+0x027b,
+0x0280,
+0x0289,
+0x0292,
+0x0299,
 0x029c,
-0x02a6,
-0x02aa,
+0x02a0,
+0x02a5,
 0x02ae,
-0x02b5,
-0x02b8,
-0x02c0,
-0x02ca,
-0x02d4,
-0x02da,
-0x02df,
+0x02b7,
+0x02be,
+0x02c4,
+0x02c8,
+0x02cb,
+0x02d1,
+0x02d7,
+0x02dd,
+0x02e1,
 0x02e5,
-0x02ea,
-0x02f2,
+0x02ec,
+0x02ef,
 0x02f7,
-0x02ff,
-0x0306,
+0x0301,
 0x030b,
-0x0312,
+0x0311,
 0x0316,
-0x031b,
-0x031f,
-0x0323,
-0x032a,
-0x032f,
-0x0334,
-0x0339,
+0x031c,
+0x0321,
+0x0329,
+0x032e,
+0x0336,
 0x033d,
-0x0343,
-0x4346,
-0x0351,
-0x0356,
-0x035a,
-0x0361,
-0x0367,
-0x036c,
+0x0349,
+0x034e,
+0x0355,
+0x0359,
+0x035e,
+0x0362,
+0x0366,
+0x036d,
 0x0375,
-0x037c,
-0x0381,
-0x0387,
+0x037a,
+0x037f,
+0x0385,
+0x038a,
 0x038e,
-0x0395,
-0x039e,
+0x0394,
+0x4397,
+0x03a2,
 0x03a7,
-0x03aa,
-0x03b0,
-0x03b3,
+0x03ab,
+0x03b2,
 0x03b8,
-0x03be,
-0x03c5,
-0x03cb,
-0x03ce,
+0x03bd,
+0x03c6,
+0x03cd,
 0x03d4,
-0x03d8,
+0x03d9,
+0x03df,
+0x03e6,
+0x03ed,
+0x03f6,
+0x03ff,
+0x0402,
+0x0408,
+0x040b,
+0x0410,
+0x0416,
+0x041d,
+0x0423,
+0x0426,
+0x042c,
+0x0430,
 };
 
 
