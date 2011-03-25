@@ -27,7 +27,7 @@ int FAST_FUNC create_icmp6_socket(void)
 	if (sock < 0) {
 		if (errno == EPERM)
 			bb_error_msg_and_die(bb_msg_perm_denied_are_you_root);
-		bb_perror_msg_and_die(bb_msg_can_not_create_raw_socket);
+		bb_perror_msg_and_die("%s", bb_msg_can_not_create_raw_socket);
 	}
 
 	/* drop root privs if running setuid */

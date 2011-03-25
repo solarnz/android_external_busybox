@@ -1423,7 +1423,7 @@ int od_main(int argc, char **argv)
 		dump(n_bytes_to_skip, end_offset);
 
 	if (fclose(stdin) == EOF)
-		bb_perror_msg_and_die(bb_msg_standard_input);
+		bb_perror_msg_and_die("%s", bb_msg_standard_input);
 
 	return ioerror;
 }
