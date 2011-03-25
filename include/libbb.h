@@ -1672,11 +1672,25 @@ extern const char bb_default_login_shell[];
 /* "sh" */
 #define DEFAULT_SHELL_SHORT_NAME   (bb_default_login_shell+6)
 
+
 /* The following devices are the same on all systems.  */
 #define CURRENT_TTY "/dev/tty"
 #define DEV_CONSOLE "/dev/console"
 
-#if defined(__FreeBSD_kernel__)
+#ifdef ANDROID
+# define CURRENT_VC CURRENT_TTY
+# define VC_1 "/dev/tty1"
+# define VC_2 "/dev/tty2"
+# define VC_3 "/dev/tty3"
+# define VC_4 "/dev/tty4"
+# define VC_5 "/dev/tty5"
+# define VC_FORMAT "/dev/tty%d"
+# define LOOP_FORMAT "/dev/block/loop%d"
+# define LOOP_NAMESIZE (sizeof("/dev/block/loop") + sizeof(int)*3 + 1)
+# define LOOP_NAME "/dev/block/loop"
+# define FB_0 "/dev/graphics/fb0"
+
+#elif defined(__FreeBSD_kernel__)
 # define CURRENT_VC CURRENT_TTY
 # define VC_1 "/dev/ttyv0"
 # define VC_2 "/dev/ttyv1"
@@ -1684,41 +1698,26 @@ extern const char bb_default_login_shell[];
 # define VC_4 "/dev/ttyv3"
 # define VC_5 "/dev/ttyv4"
 # define VC_FORMAT "/dev/ttyv%d"
-#elif defined(__GNU__)
+# define LOOP_FORMAT "/dev/loop%d"
+# define LOOP_NAMESIZE (sizeof("/dev/loop") + sizeof(int)*3 + 1)
+# define LOOP_NAME "/dev/loop"
+# define FB_0 "/dev/fb0"
+
+#else //__GNU__
+/*Linux 2.6, normal names */
 # define CURRENT_VC CURRENT_TTY
-# define VC_1 "/dev/tty1"
-# define VC_2 "/dev/tty2"
-# define VC_3 "/dev/tty3"
-# define VC_4 "/dev/tty4"
-# define VC_5 "/dev/tty5"
-# define VC_FORMAT "/dev/tty%d"
-#elif ENABLE_FEATURE_DEVFS
-/*Linux, obsolete devfs names */
-# define CURRENT_VC "/dev/vc/0"
-# define VC_1 "/dev/vc/1"
-# define VC_2 "/dev/vc/2"
-# define VC_3 "/dev/vc/3"
-# define VC_4 "/dev/vc/4"
-# define VC_5 "/dev/vc/5"
-# define VC_FORMAT "/dev/vc/%d"
-# define LOOP_FORMAT "/dev/loop/%d"
-# define LOOP_NAMESIZE (sizeof("/dev/loop/") + sizeof(int)*3 + 1)
-# define LOOP_NAME "/dev/loop/"
-# define FB_0 "/dev/fb/0"
-#else
-/*Linux, normal names */
-# define CURRENT_VC "/dev/tty0"
-# define VC_1 "/dev/tty1"
-# define VC_2 "/dev/tty2"
-# define VC_3 "/dev/tty3"
-# define VC_4 "/dev/tty4"
-# define VC_5 "/dev/tty5"
+# define VC_1 "/dev/tty0"
+# define VC_2 "/dev/tty1"
+# define VC_3 "/dev/tty2"
+# define VC_4 "/dev/tty3"
+# define VC_5 "/dev/tty4"
 # define VC_FORMAT "/dev/tty%d"
 # define LOOP_FORMAT "/dev/loop%d"
 # define LOOP_NAMESIZE (sizeof("/dev/loop") + sizeof(int)*3 + 1)
 # define LOOP_NAME "/dev/loop"
 # define FB_0 "/dev/fb0"
-#endif
+
+#endif //Platform
 
 
 #define ARRAY_SIZE(x) ((unsigned)(sizeof(x) / sizeof((x)[0])))
