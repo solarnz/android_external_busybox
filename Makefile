@@ -1,8 +1,8 @@
 VERSION = 1
 PATCHLEVEL = 18
 SUBLEVEL = 4
-EXTRAVERSION = -froyo.
-NAME = Unnamed
+EXTRAVERSION = -froyo
+NAME = bionic
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
