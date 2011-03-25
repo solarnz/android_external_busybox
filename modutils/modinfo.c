@@ -78,7 +78,8 @@ static void modinfo(const char *path, const char *version,
 		}
 		free((char*)path);
 		if (!the_module) {
-			bb_perror_msg("could not find module");
+			// outputs system error msg
+			bb_perror_msg("");
 			return;
 		}
 	}
