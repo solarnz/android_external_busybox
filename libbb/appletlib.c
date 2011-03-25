@@ -656,7 +656,7 @@ static int busybox_main(char **argv)
 		full_write2_str(" multi-call binary.\n"); /* reuse */
 		full_write2_str(
 			"Copyright (C) 1998-2009 Erik Andersen, Rob Landley, Denys Vlasenko\n"
-			"and others. Licensed under GPLv2.\n"
+			"and others. Licensed under GPLv2. Built by tpruvot@github for Defy\n"
 			"See source distribution for full notice.\n"
 			"\n"
 			"Usage: busybox [function] [arguments]...\n"
