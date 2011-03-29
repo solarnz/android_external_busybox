@@ -1667,10 +1667,9 @@ extern struct globals *const ptr_to_globals;
  * don't forget to change increment constant. */
 extern const char bb_default_login_shell[];
 
-#ifdef ANDROID
+#ifdef __BIONIC__
 /* Since android does not have the /bin path, unlike most unix systems,
  * it needs an exception in the default shell path. */
-
 # define LIBBB_DEFAULT_LOGIN_SHELL      "-/system/bin/sh"
 /* "/system/xbin/sh" */
 # define DEFAULT_SHELL     (bb_default_login_shell+1)
@@ -1678,7 +1677,6 @@ extern const char bb_default_login_shell[];
 # define DEFAULT_SHELL_SHORT_NAME     (bb_default_login_shell+13)
 
 #else
-
 # define LIBBB_DEFAULT_LOGIN_SHELL      "-/bin/sh"
 /* "/bin/sh" */
 # define DEFAULT_SHELL              (bb_default_login_shell+1)
@@ -1690,7 +1688,7 @@ extern const char bb_default_login_shell[];
 #define CURRENT_TTY "/dev/tty"
 #define DEV_CONSOLE "/dev/console"
 
-#ifdef ANDROID
+#ifdef __BIONIC__
 # define CURRENT_VC CURRENT_TTY
 # define VC_1 "/dev/tty1"
 # define VC_2 "/dev/tty2"
