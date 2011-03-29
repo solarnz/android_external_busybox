@@ -1666,15 +1666,16 @@ extern struct globals *const ptr_to_globals;
  * If you change LIBBB_DEFAULT_LOGIN_SHELL,
  * don't forget to change increment constant. */
 extern const char bb_default_login_shell[];
-/* Since android does not have the /bin path, unlike most unix systems,
- * it needs an exceptiopn in the default shell path. */
 
 #ifdef ANDROID
-# define LIBBB_DEFAULT_LOGIN_SHELL      "-/system/xbin/sh"
+/* Since android does not have the /bin path, unlike most unix systems,
+ * it needs an exception in the default shell path. */
+
+# define LIBBB_DEFAULT_LOGIN_SHELL      "-/system/bin/sh"
 /* "/system/xbin/sh" */
 # define DEFAULT_SHELL     (bb_default_login_shell+1)
 /* "sh" */
-# define DEFAULT_SHELL_SHORT_NAME     (bb_default_login_shell+14)
+# define DEFAULT_SHELL_SHORT_NAME     (bb_default_login_shell+13)
 
 #else
 
