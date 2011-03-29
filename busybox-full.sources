@@ -1,10 +1,13 @@
 
 archival/bbunzip.c archival/bzip2.c archival/cpio.c archival/gzip.c archival/libarchive/lzo1x_1.c archival/libarchive/lzo1x_1o.c archival/libarchive/lzo1x_d.c archival/lzop.c archival/tar.c archival/unzip.c
-archival/libarchive/data_align.c archival/libarchive/data_extract_all.c archival/libarchive/data_extract_to_command.c archival/libarchive/data_extract_to_stdout.c archival/libarchive/data_skip.c archival/libarchive/decompress_bunzip2.c archival/libarchive/decompress_unlzma.c archival/libarchive/decompress_unxz.c archival/libarchive/decompress_unzip.c archival/libarchive/filter_accept_all.c archival/libarchive/filter_accept_list.c archival/libarchive/filter_accept_reject_list.c archival/libarchive/find_list_entry.c archival/libarchive/get_header_cpio.c archival/libarchive/get_header_tar.c archival/libarchive/get_header_tar_bz2.c archival/libarchive/get_header_tar_gz.c archival/libarchive/get_header_tar_lzma.c archival/libarchive/header_list.c archival/libarchive/header_skip.c archival/libarchive/header_verbose_list.c archival/libarchive/init_handle.c archival/libarchive/open_transformer.c archival/libarchive/seek_by_jump.c archival/libarchive/seek_by_read.c
+archival/libarchive/data_align.c archival/libarchive/data_extract_all.c archival/libarchive/data_extract_to_command.c archival/libarchive/data_extract_to_stdout.c archival/libarchive/data_skip.c archival/libarchive/decompress_bunzip2.c archival/libarchive/decompress_unlzma.c archival/libarchive/decompress_unxz.c archival/libarchive/decompress_unzip.c archival/libarchive/decompress_uncompress.c archival/libarchive/filter_accept_all.c archival/libarchive/filter_accept_list.c archival/libarchive/filter_accept_reject_list.c archival/libarchive/find_list_entry.c archival/libarchive/get_header_cpio.c archival/libarchive/get_header_tar.c archival/libarchive/get_header_tar_bz2.c archival/libarchive/get_header_tar_gz.c archival/libarchive/get_header_tar_lzma.c archival/libarchive/header_list.c archival/libarchive/header_skip.c archival/libarchive/header_verbose_list.c archival/libarchive/init_handle.c archival/libarchive/open_transformer.c archival/libarchive/seek_by_jump.c archival/libarchive/seek_by_read.c
 console-tools/clear.c console-tools/reset.c
 coreutils/basename.c coreutils/cal.c coreutils/cat.c coreutils/catv.c coreutils/chgrp.c coreutils/chmod.c coreutils/chown.c coreutils/chroot.c coreutils/cp.c coreutils/cut.c coreutils/date.c coreutils/dd.c coreutils/df.c coreutils/dirname.c coreutils/dos2unix.c coreutils/du.c coreutils/echo.c coreutils/env.c coreutils/expr.c coreutils/false.c coreutils/fold.c coreutils/head.c coreutils/id.c coreutils/install.c coreutils/length.c coreutils/ln.c coreutils/ls.c coreutils/md5_sha1_sum.c coreutils/mkdir.c coreutils/mkfifo.c coreutils/mknod.c coreutils/mv.c coreutils/nice.c coreutils/nohup.c coreutils/od.c coreutils/printenv.c coreutils/printf.c coreutils/pwd.c coreutils/readlink.c coreutils/realpath.c coreutils/rm.c coreutils/rmdir.c coreutils/seq.c coreutils/sleep.c coreutils/sort.c coreutils/split.c coreutils/stat.c coreutils/stty.c coreutils/sync.c coreutils/tac.c coreutils/tail.c coreutils/tee.c coreutils/test.c coreutils/test_ptr_hack.c coreutils/touch.c coreutils/tr.c coreutils/true.c coreutils/tty.c coreutils/uname.c coreutils/uniq.c coreutils/usleep.c coreutils/uudecode.c coreutils/uuencode.c coreutils/wc.c coreutils/whoami.c coreutils/yes.c
 coreutils/libcoreutils/cp_mv_stat.c coreutils/libcoreutils/getopt_mk_fifo_nod.c
+coreutils/comm.c coreutils/expand.c coreutils/sum.c
+
 debianutils/mktemp.c debianutils/run_parts.c debianutils/which.c
+
 
 editors/awk.c editors/cmp.c editors/diff.c editors/ed.c editors/patch.c editors/sed.c editors/vi.c
 findutils/find.c findutils/grep.c findutils/xargs.c
@@ -14,6 +17,7 @@ libpwdgrp/uidgid_get.c
 libbb/get_cpu_count.c
 
 miscutils/bbconfig.c miscutils/dc.c miscutils/devmem.c miscutils/less.c miscutils/mountpoint.c miscutils/setsid.c miscutils/strings.c miscutils/time.c
+miscutils/rx.c miscutils/timeout.c
 modutils/modinfo.c modutils/modprobe-small.c modutils/modutils.c
 modutils/lsmod.c modutils/depmod.c modutils/rmmod.c modutils/insmod.c
 networking/arp.c networking/brctl.c networking/dnsd.c networking/ifconfig.c networking/interface.c networking/ip.c networking/nc.c networking/netstat.c networking/nslookup.c networking/ntpd.c networking/ping.c networking/route.c networking/telnet.c networking/telnetd.c networking/tftp.c networking/traceroute.c networking/wget.c
@@ -29,4 +33,4 @@ util-linux/dmesg.c util-linux/fdisk.c util-linux/flock.c util-linux/freeramdisk.
 util-linux/switch_root.c  util-linux/blockdev.c
 
 util-linux/volume_id/get_devname.c util-linux/volume_id/volume_id.c util-linux/volume_id/util.c util-linux/volume_id/ext.c
-
+util-linux/volume_id/fat.c util-linux/volume_id/iso9660.c
