@@ -72,7 +72,7 @@
 /sbin/lsmod
 /bin/lspci
 /bin/lsusb
-/bin/lzmacat
+/bin/lzcat
 /bin/lzop
 /bin/lzopcat
 /bin/md5sum
