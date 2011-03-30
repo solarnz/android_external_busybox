@@ -11,6 +11,8 @@
 /* for dirname, basename */
 #include <libgen.h>
 
+#undef HAVE_STPCPY
+
 #define killpg_busybox(P, S) kill(-(P), S)
 
 #define setmntent fopen
