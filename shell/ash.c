@@ -3745,7 +3745,7 @@ setjobctl(int on)
 			}
 			if (pgrp == getpgrp())
 				break;
-			bb_killpg(0, SIGTTIN);
+			killpg_busybox(0, SIGTTIN);
 		}
 		initialpgrp = pgrp;
 
@@ -3858,7 +3858,7 @@ restartjob(struct job *jp, int mode)
 	pgid = jp->ps[0].ps_pid;
 	if (mode == FORK_FG)
 		xtcsetpgrp(ttyfd, pgid);
-	bb_killpg(pgid, SIGCONT);
+	killpg_busybox(pgid, SIGCONT);
 	ps = jp->ps;
 	i = jp->nprocs;
 	do {
