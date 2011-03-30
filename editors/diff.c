@@ -800,7 +800,9 @@ static int FAST_FUNC skip_dir(const char *filename,
 			free(othername);
 			if (r != 0 || !S_ISDIR(osb.st_mode)) {
 				/* other dir doesn't have similarly named
-				 * directory, don't recurse */
+				 * directory, don't recurse; return 1 upon
+				 * exit, just like diffutils' diff */
+				exit_status |= 1;
 				return SKIP;
 			}
 		}
@@ -852,9 +854,10 @@ static void diffdir(char *p[2], const char *s_start)
 			break;
 		pos = !dp[0] ? 1 : (!dp[1] ? -1 : strcmp(dp[0], dp[1]));
 		k = pos > 0;
-		if (pos && !(option_mask32 & FLAG(N)))
+		if (pos && !(option_mask32 & FLAG(N))) {
 			printf("Only in %s: %s\n", p[k], dp[k]);
-		else {
+			exit_status |= 1;
+		} else {
 			char *fullpath[2], *path[2]; /* if -N */
 
 			for (i = 0; i < 2; i++) {
@@ -954,6 +957,31 @@ int diff_main(int argc UNUSED_PARAM, char **argv)
 	xfunc_error_retval = 1;
 	if (gotstdin && (S_ISDIR(stb[0].st_mode) || S_ISDIR(stb[1].st_mode)))
 		bb_error_msg_and_die("can't compare stdin to a directory");
+
+	/* Compare metadata to check if the files are the same physical file.
+	 *
+	 * Comment from diffutils source says:
+	 * POSIX says that two files are identical if st_ino and st_dev are
+	 * the same, but many file systems incorrectly assign the same (device,
+	 * inode) pair to two distinct files, including:
+	 * GNU/Linux NFS servers that export all local file systems as a
+	 * single NFS file system, if a local device number (st_dev) exceeds
+	 * 255, or if a local inode number (st_ino) exceeds 16777215.
+	 */
+	if (ENABLE_DESKTOP
+	 && stb[0].st_ino == stb[1].st_ino
+	 && stb[0].st_dev == stb[1].st_dev
+	 && stb[0].st_size == stb[1].st_size
+	 && stb[0].st_mtime == stb[1].st_mtime
+	 && stb[0].st_ctime == stb[1].st_ctime
+	 && stb[0].st_mode == stb[1].st_mode
+	 && stb[0].st_nlink == stb[1].st_nlink
+	 && stb[0].st_uid == stb[1].st_uid
+	 && stb[0].st_gid == stb[1].st_gid
+	) {
+		/* files are physically the same; no need to compare them */
+		return STATUS_SAME;
+	}
 
 	if (S_ISDIR(stb[0].st_mode) && S_ISDIR(stb[1].st_mode)) {
 #if ENABLE_FEATURE_DIFF_DIR

@@ -211,65 +211,82 @@ static void deinit_S(void)
 #if ENABLE_UNICODE_SUPPORT
 static size_t load_string(const char *src, int maxsize)
 {
-	ssize_t len = mbstowcs(command_ps, src, maxsize - 1);
-	if (len < 0)
-		len = 0;
-	command_ps[len] = BB_NUL;
-	return len;
+	if (unicode_status == UNICODE_ON) {
+		ssize_t len = mbstowcs(command_ps, src, maxsize - 1);
+		if (len < 0)
+			len = 0;
+		command_ps[len] = BB_NUL;
+		return len;
+	} else {
+		unsigned i = 0;
+		while ((command_ps[i] = src[i]) != 0)
+			i++;
+		return i;
+	}
 }
 static unsigned save_string(char *dst, unsigned maxsize)
 {
+	if (unicode_status == UNICODE_ON) {
 # if !ENABLE_UNICODE_PRESERVE_BROKEN
-	ssize_t len = wcstombs(dst, command_ps, maxsize - 1);
-	if (len < 0)
-		len = 0;
-	dst[len] = '\0';
-	return len;
+		ssize_t len = wcstombs(dst, command_ps, maxsize - 1);
+		if (len < 0)
+			len = 0;
+		dst[len] = '\0';
+		return len;
 # else
-	unsigned dstpos = 0;
-	unsigned srcpos = 0;
+		unsigned dstpos = 0;
+		unsigned srcpos = 0;
 
-	maxsize--;
-	while (dstpos < maxsize) {
-		wchar_t wc;
-		int n = srcpos;
+		maxsize--;
+		while (dstpos < maxsize) {
+			wchar_t wc;
+			int n = srcpos;
 
-		/* Convert up to 1st invalid byte (or up to end) */
-		while ((wc = command_ps[srcpos]) != BB_NUL
-		    && !unicode_is_raw_byte(wc)
-		) {
+			/* Convert up to 1st invalid byte (or up to end) */
+			while ((wc = command_ps[srcpos]) != BB_NUL
+			    && !unicode_is_raw_byte(wc)
+			) {
+				srcpos++;
+			}
+			command_ps[srcpos] = BB_NUL;
+			n = wcstombs(dst + dstpos, command_ps + n, maxsize - dstpos);
+			if (n < 0) /* should not happen */
+				break;
+			dstpos += n;
+			if (wc == BB_NUL) /* usually is */
+				break;
+
+			/* We do have invalid byte here! */
+			command_ps[srcpos] = wc; /* restore it */
 			srcpos++;
+			if (dstpos == maxsize)
+				break;
+			dst[dstpos++] = (char) wc;
 		}
-		command_ps[srcpos] = BB_NUL;
-		n = wcstombs(dst + dstpos, command_ps + n, maxsize - dstpos);
-		if (n < 0) /* should not happen */
-			break;
-		dstpos += n;
-		if (wc == BB_NUL) /* usually is */
-			break;
-
-		/* We do have invalid byte here! */
-		command_ps[srcpos] = wc; /* restore it */
-		srcpos++;
-		if (dstpos == maxsize)
-			break;
-		dst[dstpos++] = (char) wc;
-	}
-	dst[dstpos] = '\0';
-	return dstpos;
+		dst[dstpos] = '\0';
+		return dstpos;
 # endif
+	} else {
+		unsigned i = 0;
+		while ((dst[i] = command_ps[i]) != 0)
+			i++;
+		return i;
+	}
 }
 /* I thought just fputwc(c, stdout) would work. But no... */
 static void BB_PUTCHAR(wchar_t c)
 {
-	char buf[MB_CUR_MAX + 1];
-	mbstate_t mbst = { 0 };
-	ssize_t len;
-
-	len = wcrtomb(buf, c, &mbst);
-	if (len > 0) {
-		buf[len] = '\0';
-		fputs(buf, stdout);
+	if (unicode_status == UNICODE_ON) {
+		char buf[MB_CUR_MAX + 1];
+		mbstate_t mbst = { 0 };
+		ssize_t len = wcrtomb(buf, c, &mbst);
+		if (len > 0) {
+			buf[len] = '\0';
+			fputs(buf, stdout);
+		}
+	} else {
+		/* In this case, c is always one byte */
+		putchar(c);
 	}
 }
 # if ENABLE_UNICODE_COMBINING_WCHARS || ENABLE_UNICODE_WIDE_WCHARS
@@ -1816,10 +1833,9 @@ static void win_changed(int nsig)
 	errno = sv_errno;
 }
 
-static int lineedit_read_key(char *read_key_buffer)
+static int lineedit_read_key(char *read_key_buffer, int timeout)
 {
 	int64_t ic;
-	int timeout = -1;
 #if ENABLE_UNICODE_SUPPORT
 	char unicode_buf[MB_CUR_MAX + 1];
 	int unicode_idx = 0;
@@ -1924,7 +1940,7 @@ static int isrtl_str(void)
  * 0  on ctrl-C (the line entered is still returned in 'command'),
  * >0 length of input string, including terminating '\n'
  */
-int FAST_FUNC read_line_input(const char *prompt, char *command, int maxsize, line_input_t *st)
+int FAST_FUNC read_line_input(line_input_t *st, const char *prompt, char *command, int maxsize, int timeout)
 {
 	int len;
 #if ENABLE_FEATURE_TAB_COMPLETION
@@ -1998,7 +2014,6 @@ int FAST_FUNC read_line_input(const char *prompt, char *command, int maxsize, li
 	new_settings.c_cc[VINTR] = _POSIX_VDISABLE;
 	tcsetattr_stdin_TCSANOW(&new_settings);
 
-	/* Now initialize things */
 	previous_SIGWINCH_handler = signal(SIGWINCH, win_changed);
 	win_changed(0); /* do initial resizing */
 #if ENABLE_USERNAME_OR_HOMEDIR
@@ -2040,7 +2055,7 @@ int FAST_FUNC read_line_input(const char *prompt, char *command, int maxsize, li
 		int32_t ic, ic_raw;
 
 		fflush_all();
-		ic = ic_raw = lineedit_read_key(read_key_buffer);
+		ic = ic_raw = lineedit_read_key(read_key_buffer, timeout);
 
 #if ENABLE_FEATURE_EDITING_VI
 		newdelflag = 1;
@@ -2201,7 +2216,7 @@ int FAST_FUNC read_line_input(const char *prompt, char *command, int maxsize, li
 		case 'd'|VI_CMDMODE_BIT: {
 			int nc, sc;
 
-			ic = lineedit_read_key(read_key_buffer);
+			ic = lineedit_read_key(read_key_buffer, timeout);
 			if (errno) /* error */
 				goto return_error_indicator;
 			if (ic == ic_raw) { /* "cc", "dd" */
@@ -2265,7 +2280,7 @@ int FAST_FUNC read_line_input(const char *prompt, char *command, int maxsize, li
 			break;
 		case 'r'|VI_CMDMODE_BIT:
 //FIXME: unicode case?
-			ic = lineedit_read_key(read_key_buffer);
+			ic = lineedit_read_key(read_key_buffer, timeout);
 			if (errno) /* error */
 				goto return_error_indicator;
 			if (ic < ' ' || ic > 255) {

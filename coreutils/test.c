@@ -45,7 +45,7 @@
 /* This is a NOFORK applet. Be very careful! */
 
 /* test_main() is called from shells, and we need to be extra careful here.
- * This is true regardless of PREFER_APPLETS and STANDALONE_SHELL
+ * This is true regardless of PREFER_APPLETS and SH_STANDALONE
  * state. */
 
 /* test(1) accepts the following grammar:
@@ -878,7 +878,10 @@ int test_main(int argc, char **argv)
 	res = !oexpr(check_operator(*args));
 
 	if (*args != NULL && *++args != NULL) {
-		/* TODO: example when this happens? */
+		/* Examples:
+		 * test 3 -lt 5 6
+		 * test -t 1 2
+		 */
 		bb_error_msg("%s: unknown operand", *args);
 		res = 2;
 	}

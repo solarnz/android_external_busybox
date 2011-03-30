@@ -3,7 +3,7 @@
  * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 
-//applet:IF_BOOTCHARTD(APPLET(bootchartd, _BB_DIR_SBIN, _BB_SUID_DROP))
+//applet:IF_BOOTCHARTD(APPLET(bootchartd, BB_DIR_SBIN, BB_SUID_DROP))
 
 //kbuild:lib-$(CONFIG_BOOTCHARTD) += bootchartd.o
 
@@ -441,8 +441,7 @@ int bootchartd_main(int argc UNUSED_PARAM, char **argv)
 		pid_t pid = xvfork();
 		if (pid == 0) { /* child */
 			argv += 2;
-			execvp(argv[0], argv);
-			bb_perror_msg_and_die("can't execute '%s'", argv[0]);
+			BB_EXECVP_or_die(argv);
 		}
 		/* parent */
 		waitpid(pid, NULL, 0);

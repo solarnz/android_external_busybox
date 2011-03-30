@@ -23,6 +23,25 @@
  * Licensed under GPLv2 or later, see file LICENSE in this source tree.
  */
 
+/* TODO: security with -C DESTDIR option can be enhanced.
+ * Consider tar file created via:
+ * $ tar cvf bug.tar anything.txt
+ * $ ln -s /tmp symlink
+ * $ tar --append -f bug.tar symlink
+ * $ rm symlink
+ * $ mkdir symlink
+ * $ tar --append -f bug.tar symlink/evil.py
+ *
+ * This will result in an archive which contains:
+ * $ tar --list -f bug.tar
+ * anything.txt
+ * symlink
+ * symlink/evil.py
+ *
+ * Untarring it puts evil.py in '/tmp' even if the -C DESTDIR is given.
+ * This doesn't feel right, and IIRC GNU tar doesn't do that.
+ */
+
 #include <fnmatch.h>
 #include "libbb.h"
 #include "archive.h"
@@ -378,17 +397,8 @@ static int FAST_FUNC writeFileToTarball(const char *fileName, struct stat *statb
 
 	DBG("writeFileToTarball('%s')", fileName);
 
-	/* Strip leading '/' (must be before memorizing hardlink's name) */
-	header_name = fileName;
-	while (header_name[0] == '/') {
-		static smallint warned;
-
-		if (!warned) {
-			bb_error_msg("removing leading '/' from member names");
-			warned = 1;
-		}
-		header_name++;
-	}
+	/* Strip leading '/' and such (must be before memorizing hardlink's name) */
+	header_name = strip_unsafe_prefix(fileName);
 
 	if (header_name[0] == '\0')
 		return TRUE;
@@ -636,7 +646,7 @@ static llist_t *append_file_list_to_list(llist_t *list)
 	llist_t *newlist = NULL;
 
 	while (list) {
-		src_stream = xfopen_for_read(llist_pop(&list));
+		src_stream = xfopen_stdin(llist_pop(&list));
 		while ((line = xmalloc_fgetline(src_stream)) != NULL) {
 			/* kill trailing '/' unless the string is just "/" */
 			char *cp = last_char_is(line, '/');
@@ -701,11 +711,16 @@ static void handle_SIGCHLD(int status)
 #endif
 
 //usage:#define tar_trivial_usage
-//usage:       "-[" IF_FEATURE_TAR_CREATE("c") "xt" IF_FEATURE_SEAMLESS_GZ("z")
-//usage:	IF_FEATURE_SEAMLESS_BZ2("j") IF_FEATURE_SEAMLESS_LZMA("a")
-//usage:	IF_FEATURE_SEAMLESS_Z("Z") IF_FEATURE_TAR_NOPRESERVE_TIME("m") "vO] "
-//usage:	IF_FEATURE_TAR_FROM("[-X FILE] ")
-//usage:       "[-f TARFILE] [-C DIR] [FILE]..."
+//usage:	"-[" IF_FEATURE_TAR_CREATE("c") "xt"
+//usage:	IF_FEATURE_SEAMLESS_Z("Z")
+//usage:	IF_FEATURE_SEAMLESS_GZ("z")
+//usage:	IF_FEATURE_SEAMLESS_BZ2("j")
+//usage:	IF_FEATURE_SEAMLESS_LZMA("a")
+//usage:	IF_FEATURE_TAR_CREATE("h")
+//usage:	IF_FEATURE_TAR_NOPRESERVE_TIME("m")
+//usage:	"vO] "
+//usage:	IF_FEATURE_TAR_FROM("[-X FILE] [-T FILE] ")
+//usage:	"[-f TARFILE] [-C DIR] [FILE]..."
 //usage:#define tar_full_usage "\n\n"
 //usage:	IF_FEATURE_TAR_CREATE("Create, extract, ")
 //usage:	IF_NOT_FEATURE_TAR_CREATE("Extract ")
@@ -720,6 +735,9 @@ static void handle_SIGCHLD(int status)
 //usage:     "\n	f	Name of TARFILE ('-' for stdin/out)"
 //usage:     "\n	C	Change to DIR before operation"
 //usage:     "\n	v	Verbose"
+//usage:	IF_FEATURE_SEAMLESS_Z(
+//usage:     "\n	Z	(De)compress using compress"
+//usage:	)
 //usage:	IF_FEATURE_SEAMLESS_GZ(
 //usage:     "\n	z	(De)compress using gzip"
 //usage:	)
@@ -728,9 +746,6 @@ static void handle_SIGCHLD(int status)
 //usage:	)
 //usage:	IF_FEATURE_SEAMLESS_LZMA(
 //usage:     "\n	a	(De)compress using lzma"
-//usage:	)
-//usage:	IF_FEATURE_SEAMLESS_Z(
-//usage:     "\n	Z	(De)compress using compress"
 //usage:	)
 //usage:     "\n	O	Extract to stdout"
 //usage:	IF_FEATURE_TAR_CREATE(
@@ -882,7 +897,6 @@ int tar_main(int argc UNUSED_PARAM, char **argv)
 	/* Prepend '-' to the first argument if required */
 	opt_complementary = "--:" // first arg is options
 		"tt:vv:" // count -t,-v
-		"?:" // bail out with usage instead of error return
 		"X::T::" // cumulative lists
 #if ENABLE_FEATURE_TAR_LONG_OPTIONS && ENABLE_FEATURE_TAR_FROM
 		"\xff::" // cumulative lists for --exclude
@@ -956,6 +970,7 @@ int tar_main(int argc UNUSED_PARAM, char **argv)
 		putenv((char*)"TAR_FILETYPE=f");
 		signal(SIGPIPE, SIG_IGN);
 		tar_handle->action_data = data_extract_to_command;
+		IF_FEATURE_TAR_TO_COMMAND(tar_handle->tar__to_command_shell = xstrdup(get_shell_name());)
 	}
 
 	if (opt & OPT_KEEP_OLD)

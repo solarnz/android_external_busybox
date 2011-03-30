@@ -74,17 +74,6 @@ INSERT
      "\n	-t TICK	Microseconds per tick, usually 10000" \
      "\n	-p TCONST" \
 
-#define ar_trivial_usage \
-       "[-o] [-v] [-p] [-t] [-x] ARCHIVE FILES"
-#define ar_full_usage "\n\n" \
-       "Extract or list FILES from an ar archive\n" \
-     "\nOptions:" \
-     "\n	-o	Preserve original dates" \
-     "\n	-p	Extract to stdout" \
-     "\n	-t	List" \
-     "\n	-x	Extract" \
-     "\n	-v	Verbose" \
-
 #define arp_trivial_usage \
      "\n[-vn]	[-H HWTYPE] [-i IF] -a [HOSTNAME]" \
      "\n[-v]		    [-i IF] -d HOSTNAME [pub]" \
@@ -179,89 +168,8 @@ INSERT
      "\n	stp BRIDGE [1/yes/on|0/no/off]	STP on/off" \
 	) \
 
-#define bzip2_trivial_usage \
-       "[OPTIONS] [FILE]..."
-#define bzip2_full_usage "\n\n" \
-       "Compress FILEs (or stdin) with bzip2 algorithm\n" \
-     "\nOptions:" \
-     "\n	-1..9	Compression level" \
-     "\n	-d	Decompress" \
-     "\n	-c	Write to stdout" \
-     "\n	-f	Force" \
-
 #define busybox_notes_usage \
        "Hello world!\n"
-
-#define lzop_trivial_usage \
-       "[-cfvd123456789CF] [FILE]..."
-#define lzop_full_usage "\n\n" \
-       "Options:" \
-     "\n	-1..9	Compression level" \
-     "\n	-d	Decompress" \
-     "\n	-c	Write to stdout" \
-     "\n	-f	Force" \
-     "\n	-v	Verbose" \
-     "\n	-F	Don't store or verify checksum" \
-     "\n	-C	Also write checksum of compressed block" \
-
-#define lzopcat_trivial_usage \
-       "[-vCF] [FILE]..."
-#define lzopcat_full_usage "\n\n" \
-       "	-v	Verbose" \
-     "\n	-F	Don't store or verify checksum" \
-
-#define unlzop_trivial_usage \
-       "[-cfvCF] [FILE]..."
-#define unlzop_full_usage "\n\n" \
-       "Options:" \
-     "\n	-c	Write to stdout" \
-     "\n	-f	Force" \
-     "\n	-v	Verbose" \
-     "\n	-F	Don't store or verify checksum" \
-
-#define unlzma_trivial_usage \
-       "[-cf] [FILE]..."
-#define unlzma_full_usage "\n\n" \
-       "Decompress FILE (or stdin)\n" \
-     "\nOptions:" \
-     "\n	-c	Write to stdout" \
-     "\n	-f	Force" \
-
-#define lzma_trivial_usage \
-       "-d [-cf] [FILE]..."
-#define lzma_full_usage "\n\n" \
-       "Decompress FILE (or stdin)\n" \
-     "\nOptions:" \
-     "\n	-d	Decompress" \
-     "\n	-c	Write to stdout" \
-     "\n	-f	Force" \
-
-#define lzcat_trivial_usage \
-       "FILE"
-#define lzcat_full_usage "\n\n" \
-       "Decompress to stdout"
-
-#define unxz_trivial_usage \
-       "[-cf] [FILE]..."
-#define unxz_full_usage "\n\n" \
-       "Decompress FILE (or stdin)\n" \
-     "\nOptions:" \
-     "\n	-c	Write to stdout" \
-     "\n	-f	Force" \
-
-#define xz_trivial_usage \
-       "-d [-cf] [FILE]..."
-#define xz_full_usage "\n\n" \
-       "Decompress FILE (or stdin)\n" \
-     "\nOptions:" \
-     "\n	-d	Decompress" \
-     "\n	-c	Write to stdout" \
-     "\n	-f	Force" \
-
-#define xzcat_trivial_usage \
-       "FILE"
-#define xzcat_full_usage "\n\n" \
-       "Decompress to stdout"
 
 #define cal_trivial_usage \
        "[-jy] [[MONTH] YEAR]"
@@ -495,20 +403,10 @@ INSERT
        "# ls -l /bin/ls\n" \
        "-rwxr-xr-x    1 root     root        40816 Feb  5 07:45 /bin/ls*\n"
 
-#define chvt_trivial_usage \
-       "N"
-#define chvt_full_usage "\n\n" \
-       "Change the foreground virtual terminal to /dev/ttyN"
-
 #define cksum_trivial_usage \
        "FILES..."
 #define cksum_full_usage "\n\n" \
        "Calculate the CRC32 checksums of FILES"
-
-#define clear_trivial_usage \
-       ""
-#define clear_full_usage "\n\n" \
-       "Clear screen"
 
 #define cmp_trivial_usage \
        "[-l] [-s] FILE1 [FILE2" IF_DESKTOP(" [SKIP1 [SKIP2]]") "]"
@@ -591,35 +489,6 @@ INSERT
      "\n	-f	Overwrite" \
      "\n	-i	Prompt before overwrite" \
      "\n	-l,-s	Create (sym)links" \
-
-#define cpio_trivial_usage \
-       "[-dmvu] [-F FILE]" IF_FEATURE_CPIO_O(" [-H newc]") \
-       " [-ti"IF_FEATURE_CPIO_O("o")"]" IF_FEATURE_CPIO_P(" [-p DIR]")
-#define cpio_full_usage "\n\n" \
-       "Extract or list files from a cpio archive" \
-	IF_FEATURE_CPIO_O(", or" \
-     "\ncreate an archive" IF_FEATURE_CPIO_P(" (-o) or copy files (-p)") \
-		" using file list on stdin" \
-	) \
-     "\n" \
-     "\nMain operation mode:" \
-     "\n	-t	List" \
-     "\n	-i	Extract" \
-	IF_FEATURE_CPIO_O( \
-     "\n	-o	Create (requires -H newc)" \
-	) \
-	IF_FEATURE_CPIO_P( \
-     "\n	-p DIR	Copy files to DIR" \
-	) \
-     "\nOptions:" \
-     "\n	-d	Make leading directories" \
-     "\n	-m	Preserve mtime" \
-     "\n	-v	Verbose" \
-     "\n	-u	Overwrite" \
-     "\n	-F FILE	Input (-t,-i,-p) or output (-o) file" \
-	IF_FEATURE_CPIO_O( \
-     "\n	-H newc	Archive format" \
-	) \
 
 #define crond_trivial_usage \
        "-fbS -l N " IF_FEATURE_CROND_D("-d N ") "-L LOGFILE -c DIR"
@@ -734,11 +603,6 @@ INSERT
        "$ dd if=/dev/zero of=/dev/ram1 bs=1M count=4\n" \
        "4+0 records in\n" \
        "4+0 records out\n"
-
-#define deallocvt_trivial_usage \
-       "[N]"
-#define deallocvt_full_usage "\n\n" \
-       "Deallocate unused virtual terminal /dev/ttyN"
 
 #define delgroup_trivial_usage \
 	IF_FEATURE_DEL_USER_FROM_GROUP("[USER] ")"GROUP"
@@ -890,48 +754,6 @@ INSERT
      "\n	-u	dos2unix" \
      "\n	-d	unix2dos" \
 
-#define dpkg_trivial_usage \
-       "[-ilCPru] [-F OPT] PACKAGE"
-#define dpkg_full_usage "\n\n" \
-       "Install, remove and manage Debian packages\n" \
-     "\nOptions:" \
-	IF_LONG_OPTS( \
-     "\n	-i,--install	Install the package" \
-     "\n	-l,--list	List of installed packages" \
-     "\n	--configure	Configure an unpackaged package" \
-     "\n	-P,--purge	Purge all files of a package" \
-     "\n	-r,--remove	Remove all but the configuration files for a package" \
-     "\n	--unpack	Unpack a package, but don't configure it" \
-     "\n	--force-depends	Ignore dependency problems" \
-     "\n	--force-confnew	Overwrite existing config files when installing" \
-     "\n	--force-confold	Keep old config files when installing" \
-	) \
-	IF_NOT_LONG_OPTS( \
-     "\n	-i		Install the package" \
-     "\n	-l		List of installed packages" \
-     "\n	-C		Configure an unpackaged package" \
-     "\n	-P		Purge all files of a package" \
-     "\n	-r		Remove all but the configuration files for a package" \
-     "\n	-u		Unpack a package, but don't configure it" \
-     "\n	-F depends	Ignore dependency problems" \
-     "\n	-F confnew	Overwrite existing config files when installing" \
-     "\n	-F confold	Keep old config files when installing" \
-	)
-
-#define dpkg_deb_trivial_usage \
-       "[-cefxX] FILE [argument]"
-#define dpkg_deb_full_usage "\n\n" \
-       "Perform actions on Debian packages (.debs)\n" \
-     "\nOptions:" \
-     "\n	-c	List contents of filesystem tree" \
-     "\n	-e	Extract control files to [argument] directory" \
-     "\n	-f	Display control field name starting with [argument]" \
-     "\n	-x	Extract packages filesystem tree to directory" \
-     "\n	-X	Verbose extract" \
-
-#define dpkg_deb_example_usage \
-       "$ dpkg-deb -X ./busybox_0.48-1_i386.deb /tmp\n"
-
 #define du_trivial_usage \
        "[-aHLdclsx" IF_FEATURE_HUMAN_READABLE("hm") "k] [FILE]..."
 #define du_full_usage "\n\n" \
@@ -968,13 +790,6 @@ INSERT
        "12      ./docs/CVS\n" \
        "104     ./docs\n" \
        "2417    .\n"
-
-#define dumpkmap_trivial_usage \
-       "> keymap"
-#define dumpkmap_full_usage "\n\n" \
-       "Print a binary keyboard translation table to stdout"
-#define dumpkmap_example_usage \
-       "$ dumpkmap > keymap\n"
 
 #define dumpleases_trivial_usage \
        "[-r|-a] [-f LEASEFILE]"
@@ -1200,11 +1015,6 @@ INSERT
      "\n	-H HEADS" \
      "\n	-S SECTORS" \
 
-#define fgconsole_trivial_usage \
-	""
-#define fgconsole_full_usage "\n\n" \
-	"Get active console"
-
 #define findfs_trivial_usage \
        "LABEL=label or UUID=uuid"
 #define findfs_full_usage "\n\n" \
@@ -1301,23 +1111,6 @@ INSERT
      "\n	-s	Output superblock information" \
      "\n	-m	Show \"mode not cleared\" warnings" \
      "\n	-f	Force file system check" \
-
-#define ftpd_trivial_usage \
-       "[-wvS] [-t N] [-T N] [DIR]"
-#define ftpd_full_usage "\n\n" \
-       "Anonymous FTP server\n" \
-       "\n" \
-       "ftpd should be used as an inetd service.\n" \
-       "ftpd's line for inetd.conf:\n" \
-       "	21 stream tcp nowait root ftpd ftpd /files/to/serve\n" \
-       "It also can be ran from tcpsvd:\n" \
-       "	tcpsvd -vE 0.0.0.0 21 ftpd /files/to/serve\n" \
-     "\nOptions:" \
-     "\n	-w	Allow upload" \
-     "\n	-v	Log to stderr" \
-     "\n	-S	Log to syslog" \
-     "\n	-t,-T	Idle and absolute timeouts" \
-     "\n	DIR	Change root to this directory" \
 
 #define ftpget_trivial_usage \
        "[OPTIONS] HOST [LOCAL_FILE] REMOTE_FILE"
@@ -1422,55 +1215,6 @@ INSERT
        "-a or getsebool boolean..."
 #define getsebool_full_usage "\n\n" \
        "	-a	Show all selinux booleans"
-
-#define getty_trivial_usage \
-       "[OPTIONS] BAUD_RATE TTY [TERMTYPE]"
-#define getty_full_usage "\n\n" \
-       "Open a tty, prompt for a login name, then invoke /bin/login\n" \
-     "\nOptions:" \
-     "\n	-h		Enable hardware (RTS/CTS) flow control" \
-     "\n	-i		Don't display /etc/issue before running login" \
-     "\n	-L		Local line, don't do carrier detect" \
-     "\n	-m		Get baud rate from modem's CONNECT status message" \
-     "\n	-w		Wait for a CR or LF before sending /etc/issue" \
-     "\n	-n		Don't prompt the user for a login name" \
-     "\n	-f ISSUE_FILE	Display ISSUE_FILE instead of /etc/issue" \
-     "\n	-l LOGIN	Invoke LOGIN instead of /bin/login" \
-     "\n	-t SEC		Terminate after SEC if no username is read" \
-     "\n	-I INITSTR	Send INITSTR before anything else" \
-     "\n	-H HOST		Log HOST into the utmp file as the hostname" \
-
-#define gunzip_trivial_usage \
-       "[-cft] [FILE]..."
-#define gunzip_full_usage "\n\n" \
-       "Decompress FILEs (or stdin)\n" \
-     "\nOptions:" \
-     "\n	-c	Write to stdout" \
-     "\n	-f	Force" \
-     "\n	-t	Test file integrity" \
-
-#define gunzip_example_usage \
-       "$ ls -la /tmp/BusyBox*\n" \
-       "-rw-rw-r--    1 andersen andersen   557009 Apr 11 10:55 /tmp/BusyBox-0.43.tar.gz\n" \
-       "$ gunzip /tmp/BusyBox-0.43.tar.gz\n" \
-       "$ ls -la /tmp/BusyBox*\n" \
-       "-rw-rw-r--    1 andersen andersen  1761280 Apr 14 17:47 /tmp/BusyBox-0.43.tar\n"
-
-#define gzip_trivial_usage \
-       "[-cfd] [FILE]..."
-#define gzip_full_usage "\n\n" \
-       "Compress FILEs (or stdin)\n" \
-     "\nOptions:" \
-     "\n	-d	Decompress" \
-     "\n	-c	Write to stdout" \
-     "\n	-f	Force" \
-
-#define gzip_example_usage \
-       "$ ls -la /tmp/busybox*\n" \
-       "-rw-rw-r--    1 andersen andersen  1761280 Apr 14 17:47 /tmp/busybox.tar\n" \
-       "$ gzip /tmp/busybox.tar\n" \
-       "$ ls -la /tmp/busybox*\n" \
-       "-rw-rw-r--    1 andersen andersen   554058 Apr 14 17:49 /tmp/busybox.tar.gz\n"
 
 #define hdparm_trivial_usage \
        "[OPTIONS] [DEVICE]"
@@ -1577,8 +1321,8 @@ INSERT
      "\n	-c		One-byte character display" \
      "\n	-C		Canonical hex+ASCII, 16 bytes per line" \
      "\n	-d		Two-byte decimal display" \
-     "\n	-e FORMAT STRING" \
-     "\n	-f FORMAT FILE" \
+     "\n	-e FORMAT_STRING" \
+     "\n	-f FORMAT_FILE" \
      "\n	-n LENGTH	Interpret only LENGTH bytes of input" \
      "\n	-o		Two-byte octal display" \
      "\n	-s OFFSET	Skip OFFSET bytes" \
@@ -1640,25 +1384,6 @@ INSERT
      "\n	-m STRING	MD5 crypt STRING") \
      "\n	-e STRING	HTML encode STRING" \
      "\n	-d STRING	URL decode STRING" \
-
-#define hwclock_trivial_usage \
-	IF_FEATURE_HWCLOCK_LONG_OPTIONS( \
-       "[-r|--show] [-s|--hctosys] [-w|--systohc]" \
-       " [-l|--localtime] [-u|--utc]" \
-       " [-f FILE]" \
-	) \
-	IF_NOT_FEATURE_HWCLOCK_LONG_OPTIONS( \
-       "[-r] [-s] [-w] [-l] [-u] [-f FILE]" \
-	)
-#define hwclock_full_usage "\n\n" \
-       "Query and set hardware clock (RTC)\n" \
-     "\nOptions:" \
-     "\n	-r	Show hardware clock time" \
-     "\n	-s	Set system time from hardware clock" \
-     "\n	-w	Set hardware clock to system time" \
-     "\n	-u	Hardware clock is in UTC" \
-     "\n	-l	Hardware clock is in local time" \
-     "\n	-f FILE	Use specified device (e.g. /dev/rtc2)" \
 
 #define id_trivial_usage \
        "[OPTIONS] [USER]"
@@ -1960,17 +1685,6 @@ INSERT
        "	[[i|o]seq] [[i|o]key KEY] [[i|o]csum]\n" \
        "	[ttl TTL] [tos TOS] [[no]pmtudisc] [dev PHYS_DEV]" \
 
-#define kbd_mode_trivial_usage \
-       "[-a|k|s|u] [-C TTY]"
-#define kbd_mode_full_usage "\n\n" \
-       "Report or set the keyboard mode\n" \
-     "\nOptions:" \
-     "\n	-a	Default (ASCII)" \
-     "\n	-k	Medium-raw (keyboard)" \
-     "\n	-s	Raw (scancode)" \
-     "\n	-u	Unicode (utf-8)" \
-     "\n	-C TTY	Affect TTY instead of /dev/tty" \
-
 #define kill_trivial_usage \
        "[-l] [-SIG] PID..."
 #define kill_full_usage "\n\n" \
@@ -2070,24 +1784,6 @@ INSERT
 #define load_policy_trivial_usage NOUSAGE_STR
 #define load_policy_full_usage ""
 
-#define loadfont_trivial_usage \
-       "< font"
-#define loadfont_full_usage "\n\n" \
-       "Load a console font from stdin" \
-/*   "\n	-C TTY	Affect TTY instead of /dev/tty" */ \
-
-#define loadfont_example_usage \
-       "$ loadfont < /etc/i18n/fontname\n"
-
-#define loadkmap_trivial_usage \
-       "< keymap"
-#define loadkmap_full_usage "\n\n" \
-       "Load a binary keyboard translation table from stdin\n" \
-/*   "\n	-C TTY	Affect TTY instead of /dev/tty" */ \
-
-#define loadkmap_example_usage \
-       "$ loadkmap < /etc/i18n/lang-keymap\n"
-
 #define logger_trivial_usage \
        "[OPTIONS] [MESSAGE]"
 #define logger_full_usage "\n\n" \
@@ -2172,67 +1868,6 @@ INSERT
      "\n	-m	Send mail on completion" \
      "\n	-h	Print banner page too" \
      "\n	-V	Verbose" \
-
-#define ls_trivial_usage \
-       "[-1Aa" IF_FEATURE_LS_TIMESTAMPS("c") "Cd" \
-	IF_FEATURE_LS_TIMESTAMPS("e") IF_FEATURE_LS_FILETYPES("F") "iln" \
-	IF_FEATURE_LS_FILETYPES("p") IF_FEATURE_LS_FOLLOWLINKS("L") \
-	IF_FEATURE_LS_RECURSIVE("R") IF_FEATURE_LS_SORTFILES("rS") "s" \
-	IF_FEATURE_AUTOWIDTH("T") IF_FEATURE_LS_TIMESTAMPS("tu") \
-	IF_FEATURE_LS_SORTFILES("v") IF_FEATURE_AUTOWIDTH("w") "x" \
-	IF_FEATURE_LS_SORTFILES("X") IF_FEATURE_HUMAN_READABLE("h") "k" \
-	IF_SELINUX("K") "] [FILE]..."
-#define ls_full_usage "\n\n" \
-       "List directory contents\n" \
-     "\nOptions:" \
-     "\n	-1	List in a single column" \
-     "\n	-A	Don't list . and .." \
-     "\n	-a	Don't hide entries starting with ." \
-     "\n	-C	List by columns" \
-	IF_FEATURE_LS_TIMESTAMPS( \
-     "\n	-c	With -l: sort by ctime") \
-	IF_FEATURE_LS_COLOR( \
-     "\n	--color[={always,never,auto}]	Control coloring") \
-     "\n	-d	List directory entries instead of contents" \
-	IF_FEATURE_LS_TIMESTAMPS( \
-     "\n	-e	List full date and time") \
-	IF_FEATURE_LS_FILETYPES( \
-     "\n	-F	Append indicator (one of */=@|) to entries") \
-     "\n	-i	List inode numbers" \
-     "\n	-l	Long listing format" \
-     "\n	-n	List numeric UIDs and GIDs instead of names" \
-	IF_FEATURE_LS_FILETYPES( \
-     "\n	-p	Append indicator (one of /=@|) to entries") \
-	IF_FEATURE_LS_FOLLOWLINKS( \
-     "\n	-L	List entries pointed to by symlinks") \
-	IF_FEATURE_LS_RECURSIVE( \
-     "\n	-R	Recurse") \
-	IF_FEATURE_LS_SORTFILES( \
-     "\n	-r	Sort in reverse order") \
-	IF_FEATURE_LS_SORTFILES( \
-     "\n	-S	Sort by file size") \
-     "\n	-s	List the size of each file, in blocks" \
-	IF_FEATURE_AUTOWIDTH( \
-     "\n	-T N	Assume tabstop every N columns") \
-	IF_FEATURE_LS_TIMESTAMPS( \
-     "\n	-t	With -l: sort by modification time") \
-	IF_FEATURE_LS_TIMESTAMPS( \
-     "\n	-u	With -l: sort by access time") \
-	IF_FEATURE_LS_SORTFILES( \
-     "\n	-v	Sort by version") \
-	IF_FEATURE_AUTOWIDTH( \
-     "\n	-w N	Assume the terminal is N columns wide") \
-     "\n	-x	List by lines" \
-	IF_FEATURE_LS_SORTFILES( \
-     "\n	-X	Sort by extension") \
-	IF_FEATURE_HUMAN_READABLE( \
-     "\n	-h	List sizes in human readable format (1K 243M 2G)") \
-	IF_SELINUX( \
-     "\n	-k	List security context") \
-	IF_SELINUX( \
-     "\n	-K	List security context in long format") \
-	IF_SELINUX( \
-     "\n	-Z	List security context and permission") \
 
 #define lsattr_trivial_usage \
        "[-Radlv] [FILE]..."
@@ -2577,26 +2212,6 @@ INSERT
      "\nOptions:" \
      "\n	-L LBL	Label" \
 
-#define mktemp_trivial_usage \
-       "[-dt] [-p DIR] [TEMPLATE]"
-#define mktemp_full_usage "\n\n" \
-       "Create a temporary file with name based on TEMPLATE and print its name.\n" \
-       "TEMPLATE must end with XXXXXX (e.g. [/dir/]nameXXXXXX).\n" \
-     "\nOptions:" \
-     "\n	-d	Make a directory instead of a file" \
-/*   "\n	-q	Fail silently if an error occurs" - we ignore it */ \
-     "\n	-t	Generate a path rooted in temporary directory" \
-     "\n	-p DIR	Use DIR as a temporary directory (implies -t)" \
-     "\n" \
-     "\nFor -t or -p, directory is chosen as follows:" \
-     "\n$TMPDIR if set, else -p DIR, else /tmp" \
-
-#define mktemp_example_usage \
-       "$ mktemp /tmp/temp.XXXXXX\n" \
-       "/tmp/temp.mWiLjM\n" \
-       "$ ls -la /tmp/temp.mWiLjM\n" \
-       "-rw-------    1 andersen andersen        0 Apr 25 17:10 /tmp/temp.mWiLjM\n"
-
 #define more_trivial_usage \
        "[FILE]..."
 #define more_full_usage "\n\n" \
@@ -2645,7 +2260,7 @@ INSERT
      "\n	[r]slave	Convert [recursively] to a slave subtree" \
      "\n	[r]private	Convert [recursively] to a private subtree" \
      "\n	[un]bindable	Make mount point [un]able to be bind mounted" \
-     "\n	bind		Bind a file or directory to another location" \
+     "\n	[r]bind		Bind a file or directory [recursively] to another location" \
      "\n	move		Relocate an existing mount point" \
 	) \
      "\n	remount		Remount a mounted filesystem, changing flags" \
@@ -2692,45 +2307,6 @@ INSERT
        "ras3 reset retension rewind rewoffline seek setblk setdensity\n" \
        "setpart tell unload unlock weof wset" \
 
-#define nameif_trivial_usage \
-       "[-s] [-c FILE] [{IFNAME MACADDR}]"
-#define nameif_full_usage "\n\n" \
-       "Rename network interface while it in the down state\n" \
-     "\nOptions:" \
-     "\n	-c FILE		Use configuration file (default: /etc/mactab)" \
-     "\n	-s		Use syslog (LOCAL0 facility)" \
-     "\n	IFNAME MACADDR	new_interface_name interface_mac_address" \
-
-#define nameif_example_usage \
-       "$ nameif -s dmz0 00:A0:C9:8C:F6:3F\n" \
-       " or\n" \
-       "$ nameif -c /etc/my_mactab_file\n" \
-
-#define nmeter_trivial_usage \
-       "format_string"
-#define nmeter_full_usage "\n\n" \
-       "Monitor system in real time\n\n" \
-       "Format specifiers:\n" \
-       " %Nc or %[cN]	Monitor CPU. N - bar size, default 10\n" \
-       "		(displays: S:system U:user N:niced D:iowait I:irq i:softirq)\n" \
-       " %[niface]	Monitor network interface 'iface'\n" \
-       " %m		Monitor allocated memory\n" \
-       " %[mf]		Monitor free memory\n" \
-       " %[mt]		Monitor total memory\n" \
-       " %s		Monitor allocated swap\n" \
-       " %f		Monitor number of used file descriptors\n" \
-       " %Ni		Monitor total/specific IRQ rate\n" \
-       " %x		Monitor context switch rate\n" \
-       " %p		Monitor forks\n" \
-       " %[pn]		Monitor # of processes\n" \
-       " %b		Monitor block io\n" \
-       " %Nt		Show time (with N decimal points)\n" \
-       " %Nd		Milliseconds between updates (default:1000)\n" \
-       " %r		Print <cr> instead of <lf> at EOL" \
-
-#define nmeter_example_usage \
-       "nmeter '%250d%t %20c int %i bio %b mem %m forks%p'"
-
 #define nohup_trivial_usage \
        "PROG ARGS"
 #define nohup_full_usage "\n\n" \
@@ -2772,19 +2348,6 @@ INSERT
 #define od_full_usage "\n\n" \
        "Write an unambiguous representation, octal bytes by default, of FILE\n" \
        "(or stdin) to stdout"
-
-#define openvt_trivial_usage \
-       "[-c N] [-sw] [PROG ARGS]"
-#define openvt_full_usage "\n\n" \
-       "Start PROG on a new virtual terminal\n" \
-     "\nOptions:" \
-     "\n	-c N	Use specified VT" \
-     "\n	-s	Switch to the VT" \
-/*   "\n	-l	Run PROG as login shell (by prepending '-')" */ \
-     "\n	-w	Wait for PROG to exit" \
-
-#define openvt_example_usage \
-       "openvt 2 /bin/ash\n"
 
 /*
 #define parse_trivial_usage \
@@ -2858,61 +2421,6 @@ INSERT
        "$ pidof /bin/sh\n20351 5973 5950\n") \
 	IF_FEATURE_PIDOF_OMIT( \
        "$ pidof /bin/sh -o %PPID\n20351 5950")
-
-#if !ENABLE_FEATURE_FANCY_PING
-#define ping_trivial_usage \
-       "host"
-#define ping_full_usage "\n\n" \
-       "Send ICMP ECHO_REQUEST packets to network hosts"
-#define ping6_trivial_usage \
-       "host"
-#define ping6_full_usage "\n\n" \
-       "Send ICMP ECHO_REQUEST packets to network hosts"
-#else
-#define ping_trivial_usage \
-       "[OPTIONS] HOST"
-#define ping_full_usage "\n\n" \
-       "Send ICMP ECHO_REQUEST packets to network hosts\n" \
-     "\nOptions:" \
-     "\n	-4,-6		Force IP or IPv6 name resolution" \
-     "\n	-c CNT		Send only CNT pings" \
-     "\n	-s SIZE		Send SIZE data bytes in packets (default:56)" \
-     "\n	-I IFACE/IP	Use interface or IP address as source" \
-     "\n	-W SEC		Seconds to wait for the first response (default:10)" \
-     "\n			(after all -c CNT packets are sent)" \
-     "\n	-w SEC		Seconds until ping exits (default:infinite)" \
-     "\n			(can exit earlier with -c CNT)" \
-     "\n	-q		Quiet, only displays output at start" \
-     "\n			and when finished" \
-
-#define ping6_trivial_usage \
-       "[OPTIONS] HOST"
-#define ping6_full_usage "\n\n" \
-       "Send ICMP ECHO_REQUEST packets to network hosts\n" \
-     "\nOptions:" \
-     "\n	-c CNT		Send only CNT pings" \
-     "\n	-s SIZE		Send SIZE data bytes in packets (default:56)" \
-     "\n	-I IFACE/IP	Use interface or IP address as source" \
-     "\n	-q		Quiet, only displays output at start" \
-     "\n			and when finished" \
-
-#endif
-#define ping_example_usage \
-       "$ ping localhost\n" \
-       "PING slag (127.0.0.1): 56 data bytes\n" \
-       "64 bytes from 127.0.0.1: icmp_seq=0 ttl=255 time=20.1 ms\n" \
-       "\n" \
-       "--- debian ping statistics ---\n" \
-       "1 packets transmitted, 1 packets received, 0% packet loss\n" \
-       "round-trip min/avg/max = 20.1/20.1/20.1 ms\n"
-#define ping6_example_usage \
-       "$ ping6 ip6-localhost\n" \
-       "PING ip6-localhost (::1): 56 data bytes\n" \
-       "64 bytes from ::1: icmp6_seq=0 ttl=64 time=20.1 ms\n" \
-       "\n" \
-       "--- ip6-localhost ping statistics ---\n" \
-       "1 packets transmitted, 1 packets received, 0% packet loss\n" \
-       "round-trip min/avg/max = 20.1/20.1/20.1 ms\n"
 
 #define pipe_progress_trivial_usage NOUSAGE_STR
 #define pipe_progress_full_usage ""
@@ -3127,16 +2635,6 @@ INSERT
 #define scriptreplay_full_usage "\n\n" \
        "Play back typescripts, using timing information"
 
-#define reset_trivial_usage \
-       ""
-#define reset_full_usage "\n\n" \
-       "Reset the screen"
-
-#define resize_trivial_usage \
-       ""
-#define resize_full_usage "\n\n" \
-       "Resize the screen"
-
 #define restorecon_trivial_usage \
        "[-iFnRv] [-e EXCLUDEDIR]... [-o FILE] [-f FILE]"
 #define restorecon_full_usage "\n\n" \
@@ -3201,24 +2699,6 @@ INSERT
      "\n	-n	Don't resolve names" \
      "\n	-e	Display other/more information" \
      "\n	-A inet" IF_FEATURE_IPV6("{6}") "	Select address family" \
-
-#define rpm_trivial_usage \
-       "-i PACKAGE.rpm; rpm -qp[ildc] PACKAGE.rpm"
-#define rpm_full_usage "\n\n" \
-       "Manipulate RPM packages\n" \
-     "\nCommands:" \
-     "\n	-i	Install package" \
-     "\n	-qp	Query package" \
-     "\nOptions:" \
-     "\n	-i	Show information" \
-     "\n	-l	List contents" \
-     "\n	-d	List documents" \
-     "\n	-c	List config files" \
-
-#define rpm2cpio_trivial_usage \
-       "package.rpm"
-#define rpm2cpio_full_usage "\n\n" \
-       "Output a cpio archive of the rpm file"
 
 #define rtcwake_trivial_usage \
        "[-a | -l | -u] [-d DEV] [-m MODE] [-s SEC | -t TIME]"
@@ -3352,36 +2832,6 @@ INSERT
 #define selinuxenabled_trivial_usage NOUSAGE_STR
 #define selinuxenabled_full_usage ""
 
-#define sendmail_trivial_usage \
-       "[OPTIONS] [RECIPIENT_EMAIL]..."
-#define sendmail_full_usage "\n\n" \
-       "Read email from stdin and send it\n" \
-     "\nStandard options:" \
-     "\n	-t		Read additional recipients from message body" \
-     "\n	-f sender	Sender (required)" \
-     "\n	-o options	Various options. -oi implied, others are ignored" \
-     "\n	-i		-oi synonym. implied and ignored" \
-     "\n" \
-     "\nBusybox specific options:" \
-     "\n	-w seconds	Network timeout" \
-     "\n	-H 'PROG ARGS'	Run connection helper" \
-     "\n			Examples:" \
-     "\n			-H 'exec openssl s_client -quiet -tls1 -starttls smtp" \
-     "\n				-connect smtp.gmail.com:25' <email.txt" \
-     "\n				[4<username_and_passwd.txt | -au<username> -ap<password>]" \
-     "\n			-H 'exec openssl s_client -quiet -tls1" \
-     "\n				-connect smtp.gmail.com:465' <email.txt" \
-     "\n				[4<username_and_passwd.txt | -au<username> -ap<password>]" \
-     "\n	-S server[:port] Server" \
-     "\n	-au<username>	Username for AUTH LOGIN" \
-     "\n	-ap<password>	Password for AUTH LOGIN" \
-     "\n	-am<method>	Authentication method. Ignored. LOGIN is implied" \
-     "\n" \
-     "\nOther options are silently ignored; -oi -t is implied" \
-	IF_MAKEMIME( \
-     "\nUse makemime applet to create message with attachments" \
-	)
-
 #define seq_trivial_usage \
        "[-w] [-s SEP] [FIRST [INC]] LAST"
 #define seq_full_usage "\n\n" \
@@ -3396,13 +2846,6 @@ INSERT
 #define sestatus_full_usage "\n\n" \
        "	-v	Verbose" \
      "\n	-b	Display current state of booleans" \
-
-#define setconsole_trivial_usage \
-       "[-r" IF_FEATURE_SETCONSOLE_LONG_OPTIONS("|--reset") "] [DEVICE]"
-#define setconsole_full_usage "\n\n" \
-       "Redirect system console output to DEVICE (default: /dev/tty)\n" \
-     "\nOptions:" \
-     "\n	-r	Reset output to /dev/console" \
 
 #define setenforce_trivial_usage \
        "[Enforcing | Permissive | 1 | 0]"
@@ -3443,22 +2886,6 @@ INSERT
 #define setfont_example_usage \
        "$ setfont -m koi8-r /etc/i18n/fontname\n"
 
-#define setkeycodes_trivial_usage \
-       "SCANCODE KEYCODE..."
-#define setkeycodes_full_usage "\n\n" \
-       "Set entries into the kernel's scancode-to-keycode map,\n" \
-       "allowing unusual keyboards to generate usable keycodes.\n\n" \
-       "SCANCODE may be either xx or e0xx (hexadecimal),\n" \
-       "and KEYCODE is given in decimal." \
-
-#define setkeycodes_example_usage \
-       "$ setkeycodes e030 127\n"
-
-#define setlogcons_trivial_usage \
-       "N"
-#define setlogcons_full_usage "\n\n" \
-       "Redirect the kernel output to console N (0 for current)"
-
 #define setsebool_trivial_usage \
        "boolean value"
 
@@ -3482,15 +2909,6 @@ INSERT
      "\n	-W	Display with no host column truncation" \
      "\n	-f FILE Read from FILE instead of /var/log/wtmp" \
 	)
-
-#define showkey_trivial_usage \
-       "[-a | -k | -s]"
-#define showkey_full_usage "\n\n" \
-       "Show keys pressed\n" \
-     "\nOptions:" \
-     "\n	-a	Display decimal/octal/hex values of the keys" \
-     "\n	-k	Display interpreted keycodes (default)" \
-     "\n	-s	Display raw scan-codes" \
 
 #define slattach_trivial_usage \
        "[-cehmLF] [-s SPEED] [-p PROTOCOL] DEVICE"
@@ -3724,15 +3142,6 @@ INSERT
      "\n	-g		Print in stty-readable form" \
      "\n	[SETTING]	See manpage" \
 
-#define su_trivial_usage \
-       "[OPTIONS] [-] [USERNAME]"
-#define su_full_usage "\n\n" \
-       "Change user id or become root\n" \
-     "\nOptions:" \
-     "\n	-p,-m	Preserve environment" \
-     "\n	-c CMD	Command to pass to 'sh -c'" \
-     "\n	-s SH	Shell to use instead of default shell" \
-
 #define sulogin_trivial_usage \
        "[-t N] [TTY]"
 #define sulogin_full_usage "\n\n" \
@@ -3763,13 +3172,6 @@ INSERT
        "	runsv exits too\n" \
        "pause, cont, hup, alarm, interrupt, quit, 1, 2, term, kill: send\n" \
        "STOP, CONT, HUP, ALRM, INT, QUIT, USR1, USR2, TERM, KILL signal to service" \
-
-#define svlogd_trivial_usage \
-       "[-ttv] [-r C] [-R CHARS] [-l MATCHLEN] [-b BUFLEN] DIR..."
-#define svlogd_full_usage "\n\n" \
-       "Continuously read log data from stdin, optionally\n" \
-       "filter log messages, and write the data to one or more automatically\n" \
-       "rotated logs" \
 
 #define swapoff_trivial_usage \
        "[-a] [DEVICE]"
@@ -4052,30 +3454,6 @@ INSERT
        "Runs PROG. Sends SIG to it if it is not gone in SECS seconds.\n" \
        "Defaults: SECS: 10, SIG: TERM." \
 
-#define top_trivial_usage \
-       "[-b] [-nCOUNT] [-dSECONDS]" IF_FEATURE_TOPMEM(" [-m]")
-#define top_full_usage "\n\n" \
-       "Provide a view of process activity in real time.\n" \
-       "Read the status of all processes from /proc each SECONDS\n" \
-       "and display a screenful of them." \
-//TODO: add options and keyboard commands
-
-#define touch_trivial_usage \
-       "[-c] [-d DATE] [-r FILE] FILE [FILE]..."
-#define touch_full_usage "\n\n" \
-       "Update the last-modified date on the given FILE[s]\n" \
-     "\nOptions:" \
-     "\n	-c	Don't create files" \
-     "\n	-d DT	Date/time to use" \
-     "\n	-r FILE	Use FILE's date/time" \
-
-#define touch_example_usage \
-       "$ ls -l /tmp/foo\n" \
-       "/bin/ls: /tmp/foo: No such file or directory\n" \
-       "$ touch /tmp/foo\n" \
-       "$ ls -l /tmp/foo\n" \
-       "-rw-rw-r--    1 andersen andersen        0 Apr 15 01:11 /tmp/foo\n"
-
 #define tr_trivial_usage \
        "[-cds] STRING1 [STRING2]"
 #define tr_full_usage "\n\n" \
@@ -4226,14 +3604,6 @@ INSERT
        "$ uname -a\n" \
        "Linux debian 2.4.23 #2 Tue Dec 23 17:09:10 MST 2003 i686 GNU/Linux\n"
 
-#define uncompress_trivial_usage \
-       "[-cf] [FILE]..."
-#define uncompress_full_usage "\n\n" \
-       "Decompress .Z file[s]\n" \
-     "\nOptions:" \
-     "\n	-c	Write to stdout" \
-     "\n	-f	Overwrite" \
-
 #define unexpand_trivial_usage \
        "[-fa][-t N] [FILE]..."
 #define unexpand_full_usage "\n\n" \
@@ -4267,19 +3637,6 @@ INSERT
        "a\n" \
        "b\n" \
        "c\n"
-
-#define unzip_trivial_usage \
-       "[-opts[modifiers]] FILE[.zip] [LIST] [-x XLIST] [-d DIR]"
-#define unzip_full_usage "\n\n" \
-       "Extract files from ZIP archives\n" \
-     "\nOptions:" \
-     "\n	-l	List archive contents (with -q for short form)" \
-     "\n	-n	Never overwrite files (default)" \
-     "\n	-o	Overwrite" \
-     "\n	-p	Send output to stdout" \
-     "\n	-q	Quiet" \
-     "\n	-x XLST	Exclude these files" \
-     "\n	-d DIR	Extract files into DIR" \
 
 #define uptime_trivial_usage \
        ""
@@ -4394,31 +3751,6 @@ INSERT
      "\n" \
      "\nUse 500ms to specify period in milliseconds" \
 
-#define wget_trivial_usage \
-	IF_FEATURE_WGET_LONG_OPTIONS( \
-       "[-c|--continue] [-s|--spider] [-q|--quiet] [-O|--output-document FILE]\n" \
-       "	[--header 'header: value'] [-Y|--proxy on/off] [-P DIR]\n" \
-       "	[--no-check-certificate] [-U|--user-agent AGENT]" \
-			IF_FEATURE_WGET_TIMEOUT("[-T SEC] ") " URL" \
-	) \
-	IF_NOT_FEATURE_WGET_LONG_OPTIONS( \
-       "[-csq] [-O FILE] [-Y on/off] [-P DIR] [-U AGENT]" \
-			IF_FEATURE_WGET_TIMEOUT("[-T SEC] ") " URL" \
-	)
-#define wget_full_usage "\n\n" \
-       "Retrieve files via HTTP or FTP\n" \
-     "\nOptions:" \
-     "\n	-s	Spider mode - only check file existence" \
-     "\n	-c	Continue retrieval of aborted transfer" \
-     "\n	-q	Quiet" \
-     "\n	-P DIR	Save to DIR (default .)" \
-	IF_FEATURE_WGET_TIMEOUT( \
-     "\n	-T SEC	Network read timeout is SEC seconds" \
-	) \
-     "\n	-O FILE	Save to FILE ('-' for stdout)" \
-     "\n	-U STR	Use STR for User-Agent header" \
-     "\n	-Y	Use proxy ('on' or 'off')" \
-
 #define which_trivial_usage \
        "[COMMAND]..."
 #define which_full_usage "\n\n" \
@@ -4438,11 +3770,6 @@ INSERT
        ""
 #define whoami_full_usage "\n\n" \
        "Print the user name associated with the current effective user id"
-
-#define zcat_trivial_usage \
-       "FILE"
-#define zcat_full_usage "\n\n" \
-       "Decompress to stdout"
 
 #define zcip_trivial_usage \
        "[OPTIONS] IFACE SCRIPT"

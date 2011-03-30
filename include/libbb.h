@@ -46,10 +46,12 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#ifndef major
+# include <sys/sysmacros.h>
+#endif
 #include <sys/wait.h>
 #include <termios.h>
 #include <time.h>
-#include <unistd.h>
 #include <sys/param.h>
 #ifdef HAVE_MNTENT_H
 # include <mntent.h>
@@ -62,6 +64,9 @@
 # include <selinux/context.h>
 # include <selinux/flask.h>
 # include <selinux/av_permissions.h>
+#endif
+#if ENABLE_FEATURE_UTMP
+# include <utmp.h>
 #endif
 #if ENABLE_LOCALE_SUPPORT
 # include <locale.h>
@@ -81,6 +86,19 @@
 #  include <shadow.h>
 # endif
 #endif
+/* Just in case libc doesn't define some of these... */
+#ifndef _PATH_PASSWD
+#define _PATH_PASSWD  "/etc/passwd"
+#endif
+#ifndef _PATH_GROUP
+#define _PATH_GROUP   "/etc/group"
+#endif
+#ifndef _PATH_SHADOW
+#define _PATH_SHADOW  "/etc/shadow"
+#endif
+#ifndef _PATH_GSHADOW
+#define _PATH_GSHADOW "/etc/gshadow"
+#endif
 #if defined __FreeBSD__ || defined __OpenBSD__
 # include <netinet/in.h>
 # include <arpa/inet.h>
@@ -96,6 +114,15 @@
 #  define socklen_t bb_socklen_t
    typedef unsigned socklen_t;
 # endif
+#endif
+#ifndef HAVE_CLEARENV
+# define clearenv() do { if (environ) environ[0] = NULL; } while (0)
+#endif
+#ifndef HAVE_FDATASYNC
+# define fdatasync fsync
+#endif
+#ifndef HAVE_XTABS
+# define XTABS TAB3
 #endif
 
 
@@ -357,9 +384,9 @@ extern char *bb_get_last_path_component_strip(char *path) FAST_FUNC;
 /* "abc/def/" -> "" and it never modifies 'path' */
 extern char *bb_get_last_path_component_nostrip(const char *path) FAST_FUNC;
 
-int ndelay_on(int fd) FAST_FUNC;
-int ndelay_off(int fd) FAST_FUNC;
-int close_on_exec_on(int fd) FAST_FUNC;
+void ndelay_on(int fd) FAST_FUNC;
+void ndelay_off(int fd) FAST_FUNC;
+void close_on_exec_on(int fd) FAST_FUNC;
 void xdup2(int, int) FAST_FUNC;
 void xmove_fd(int, int) FAST_FUNC;
 
@@ -683,6 +710,8 @@ extern char *xmalloc_reads(int fd, char *pfx, size_t *maxsz_p) FAST_FUNC;
 extern void *xmalloc_read(int fd, size_t *maxsz_p) FAST_FUNC RETURNS_MALLOC;
 /* Returns NULL if file can't be opened (default max size: INT_MAX - 4095) */
 extern void *xmalloc_open_read_close(const char *filename, size_t *maxsz_p) FAST_FUNC RETURNS_MALLOC;
+/* Never returns NULL */
+extern void *xmalloc_xopen_read_close(const char *filename, size_t *maxsz_p) FAST_FUNC RETURNS_MALLOC;
 /* Autodetects gzip/bzip2 formats. fd may be in the middle of the file! */
 #if ENABLE_FEATURE_SEAMLESS_LZMA \
  || ENABLE_FEATURE_SEAMLESS_BZ2 \
@@ -695,8 +724,6 @@ extern void setup_unzip_on_fd(int fd /*, int fail_if_not_detected*/) FAST_FUNC;
 /* Autodetects .gz etc */
 extern int open_zipped(const char *fname) FAST_FUNC;
 extern void *xmalloc_open_zipped_read_close(const char *fname, size_t *maxsz_p) FAST_FUNC RETURNS_MALLOC;
-/* Never returns NULL */
-extern void *xmalloc_xopen_read_close(const char *filename, size_t *maxsz_p) FAST_FUNC RETURNS_MALLOC;
 
 extern ssize_t safe_write(int fd, const void *buf, size_t count) FAST_FUNC;
 // NB: will return short write on error, not -1,
@@ -834,14 +861,14 @@ char* xuid2uname(uid_t uid) FAST_FUNC;
 char* xgid2group(gid_t gid) FAST_FUNC;
 char* uid2uname(uid_t uid) FAST_FUNC;
 char* gid2group(gid_t gid) FAST_FUNC;
-char* uid2uname_utoa(long uid) FAST_FUNC;
-char* gid2group_utoa(long gid) FAST_FUNC;
+char* uid2uname_utoa(uid_t uid) FAST_FUNC;
+char* gid2group_utoa(gid_t gid) FAST_FUNC;
 /* versions which cache results (useful for ps, ls etc) */
 const char* get_cached_username(uid_t uid) FAST_FUNC;
 const char* get_cached_groupname(gid_t gid) FAST_FUNC;
 void clear_username_cache(void) FAST_FUNC;
 /* internally usernames are saved in fixed-sized char[] buffers */
-enum { USERNAME_MAX_SIZE = 16 - sizeof(int) };
+enum { USERNAME_MAX_SIZE = 32 - sizeof(uid_t) };
 #if ENABLE_FEATURE_CHECK_NAMES
 void die_if_bad_username(const char* name) FAST_FUNC;
 #else
@@ -856,6 +883,7 @@ void FAST_FUNC update_utmp(pid_t pid, int new_type, const char *tty_name, const 
 # define update_utmp(pid, new_type, tty_name, username, hostname) ((void)0)
 #endif
 
+
 int execable_file(const char *name) FAST_FUNC;
 char *find_execable(const char *filename, char **PATHp) FAST_FUNC;
 int exists_execable(const char *filename) FAST_FUNC;
@@ -864,14 +892,16 @@ int exists_execable(const char *filename) FAST_FUNC;
  * but it may exec busybox and call applet instead of searching PATH.
  */
 #if ENABLE_FEATURE_PREFER_APPLETS
-int bb_execvp(const char *file, char *const argv[]) FAST_FUNC;
-#define BB_EXECVP(prog,cmd) bb_execvp(prog,cmd)
+int BB_EXECVP(const char *file, char *const argv[]) FAST_FUNC;
 #define BB_EXECLP(prog,cmd,...) \
-	execlp((find_applet_by_name(prog) >= 0) ? CONFIG_BUSYBOX_EXEC_PATH : prog, \
-		cmd, __VA_ARGS__)
+	do { \
+		if (find_applet_by_name(prog) >= 0) \
+			execlp(bb_busybox_exec_path, cmd, __VA_ARGS__); \
+		execlp(prog, cmd, __VA_ARGS__); \
+	} while (0)
 #else
 #define BB_EXECVP(prog,cmd)     execvp(prog,cmd)
-#define BB_EXECLP(prog,cmd,...) execlp(prog,cmd, __VA_ARGS__)
+#define BB_EXECLP(prog,cmd,...) execlp(prog,cmd,__VA_ARGS__)
 #endif
 int BB_EXECVP_or_die(char **argv) NORETURN FAST_FUNC;
 
@@ -905,19 +935,8 @@ pid_t wait_any_nohang(int *wstat) FAST_FUNC;
 int wait4pid(pid_t pid) FAST_FUNC;
 /* Same as wait4pid(spawn(argv)), but with NOFORK/NOEXEC if configured: */
 int spawn_and_wait(char **argv) FAST_FUNC;
-struct nofork_save_area {
-	jmp_buf die_jmp;
-	const char *applet_name;
-	uint32_t option_mask32;
-	int die_sleep;
-	uint8_t xfunc_error_retval;
-	smallint saved;
-};
-void save_nofork_data(struct nofork_save_area *save) FAST_FUNC;
-void restore_nofork_data(struct nofork_save_area *save) FAST_FUNC;
 /* Does NOT check that applet is NOFORK, just blindly runs it */
 int run_nofork_applet(int applet_no, char **argv) FAST_FUNC;
-int run_nofork_applet_prime(struct nofork_save_area *old, int applet_no, char **argv) FAST_FUNC;
 
 /* Helpers for daemonization.
  *
@@ -1201,10 +1220,17 @@ char *bb_simplify_path(const char *path) FAST_FUNC;
 /* Returns ptr to NUL */
 char *bb_simplify_abs_path_inplace(char *path) FAST_FUNC;
 
-#define FAIL_DELAY 3
+#define LOGIN_FAIL_DELAY 3
 extern void bb_do_delay(int seconds) FAST_FUNC;
 extern void change_identity(const struct passwd *pw) FAST_FUNC;
 extern void run_shell(const char *shell, int loginshell, const char *command, const char **additional_args) NORETURN FAST_FUNC;
+
+/* Returns $SHELL, getpwuid(getuid())->pw_shell, or DEFAULT_SHELL.
+ * Note that getpwuid result might need xstrdup'ing
+ * if there is a possibility of intervening getpwxxx() calls.
+ */
+const char *get_shell_name(void);
+
 #if ENABLE_SELINUX
 extern void renew_current_security_context(void) FAST_FUNC;
 extern void set_current_security_context(security_context_t sid) FAST_FUNC;
@@ -1216,6 +1242,12 @@ extern void selinux_preserve_fcontext(int fdesc) FAST_FUNC;
 #define selinux_preserve_fcontext(fdesc) ((void)0)
 #endif
 extern void selinux_or_die(void) FAST_FUNC;
+
+
+/* systemd support */
+#define SD_LISTEN_FDS_START 3
+int sd_listen_fds(void);
+
 
 /* setup_environment:
  * if chdir pw->pw_dir: ok: else if to_tmp == 1: goto /tmp else: goto / or die
@@ -1297,7 +1329,7 @@ void add_to_ino_dev_hashtable(const struct stat *statbuf, const char *name) FAST
 void reset_ino_dev_hashtable(void) FAST_FUNC;
 #ifdef __GLIBC__
 /* At least glibc has horrendously large inline for this, so wrap it */
-unsigned long long bb_makedev(unsigned int major, unsigned int minor) FAST_FUNC;
+unsigned long long bb_makedev(unsigned major, unsigned minor) FAST_FUNC;
 #undef makedev
 #define makedev(a,b) bb_makedev(a,b)
 #endif
@@ -1392,17 +1424,18 @@ enum {
 };
 line_input_t *new_line_input_t(int flags) FAST_FUNC;
 /* So far static: void free_line_input_t(line_input_t *n) FAST_FUNC; */
-/* maxsize must be >= 2.
+/*
+ * maxsize must be >= 2.
  * Returns:
  * -1 on read errors or EOF, or on bare Ctrl-D,
  * 0  on ctrl-C (the line entered is still returned in 'command'),
  * >0 length of input string, including terminating '\n'
  */
-int read_line_input(const char* prompt, char* command, int maxsize, line_input_t *state) FAST_FUNC;
+int read_line_input(line_input_t *st, const char *prompt, char *command, int maxsize, int timeout) FAST_FUNC;
 #else
 #define MAX_HISTORY 0
 int read_line_input(const char* prompt, char* command, int maxsize) FAST_FUNC;
-#define read_line_input(prompt, command, maxsize, state) \
+#define read_line_input(state, prompt, command, maxsize, timeout) \
 	read_line_input(prompt, command, maxsize)
 #endif
 
@@ -1448,6 +1481,7 @@ typedef struct procps_status_t {
 	char *argv0;
 	char *exe;
 	IF_SELINUX(char *context;)
+	IF_FEATURE_SHOW_THREADS(unsigned main_thread_pid;)
 	/* Everything below must contain no ptrs to malloc'ed data:
 	 * it is memset(0) for each process in procps_scan() */
 	unsigned long vsz, rss; /* we round it to kbytes */
@@ -1579,16 +1613,24 @@ int print_flags_separated(const int *masks, const char *labels,
 int print_flags(const masks_labels_t *ml, int flags) FAST_FUNC;
 
 typedef struct bb_progress_t {
-	off_t lastsize;
-	unsigned lastupdate_sec;
+	unsigned last_size;
+	unsigned last_update_sec;
+	unsigned last_change_sec;
 	unsigned start_sec;
-	smallint inited;
+	const char *curfile;
 } bb_progress_t;
 
-void bb_progress_init(bb_progress_t *p) FAST_FUNC;
-void bb_progress_update(bb_progress_t *p, const char *curfile,
-			off_t beg_range, off_t transferred,
-			off_t totalsize) FAST_FUNC;
+#define is_bb_progress_inited(p) ((p)->curfile != NULL)
+#define bb_progress_free(p) do { \
+	if (ENABLE_UNICODE_SUPPORT) free((char*)((p)->curfile)); \
+	(p)->curfile = NULL; \
+} while (0)
+void bb_progress_init(bb_progress_t *p, const char *curfile) FAST_FUNC;
+void bb_progress_update(bb_progress_t *p,
+			uoff_t beg_range,
+			uoff_t transferred,
+			uoff_t totalsize) FAST_FUNC;
+
 
 extern const char *applet_name;
 
@@ -1625,10 +1667,10 @@ extern const char bb_path_wtmp_file[];
  * get the list of currently mounted filesystems */
 #define bb_path_mtab_file IF_FEATURE_MTAB_SUPPORT("/etc/mtab")IF_NOT_FEATURE_MTAB_SUPPORT("/proc/mounts")
 
-#define bb_path_passwd_file "/etc/passwd"
-#define bb_path_shadow_file "/etc/shadow"
-#define bb_path_gshadow_file "/etc/gshadow"
-#define bb_path_group_file "/etc/group"
+#define bb_path_passwd_file  _PATH_PASSWD
+#define bb_path_group_file   _PATH_GROUP
+#define bb_path_shadow_file  _PATH_SHADOW
+#define bb_path_gshadow_file _PATH_GSHADOW
 
 #define bb_path_motd_file "/etc/motd"
 

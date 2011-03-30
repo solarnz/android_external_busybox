@@ -81,14 +81,19 @@
  *              $ "export" i=`echo 'aaa  bbb'`; echo "$i"
  *              aaa
  */
-#include "busybox.h"  /* for APPLET_IS_NOFORK/NOEXEC */
-#include <malloc.h>   /* for malloc_trim */
+#if !(defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) \
+	|| defined(__APPLE__) \
+    )
+# include <malloc.h>   /* for malloc_trim */
+#endif
 #include <glob.h>
 /* #include <dmalloc.h> */
 #if ENABLE_HUSH_CASE
 # include <fnmatch.h>
 #endif
 
+#include "busybox.h"  /* for APPLET_IS_NOFORK/NOEXEC */
+#include "unicode.h"
 #include "shell_common.h"
 #include "math.h"
 #include "match.h"
@@ -100,14 +105,6 @@
 #ifndef PIPE_BUF
 # define PIPE_BUF 4096  /* amount of buffering in a pipe */
 #endif
-
-//applet:IF_HUSH(APPLET(hush, _BB_DIR_BIN, _BB_SUID_DROP))
-//applet:IF_MSH(APPLET(msh, _BB_DIR_BIN, _BB_SUID_DROP))
-//applet:IF_FEATURE_SH_IS_HUSH(APPLET_ODDNAME(sh, hush, _BB_DIR_BIN, _BB_SUID_DROP, sh))
-//applet:IF_FEATURE_BASH_IS_HUSH(APPLET_ODDNAME(bash, hush, _BB_DIR_BIN, _BB_SUID_DROP, bash))
-
-//kbuild:lib-$(CONFIG_HUSH) += hush.o match.o shell_common.o
-//kbuild:lib-$(CONFIG_HUSH_RANDOM_SUPPORT) += random.o
 
 //config:config HUSH
 //config:	bool "hush"
@@ -245,14 +242,35 @@
 //config:	  msh is deprecated and will be removed, please migrate to hush.
 //config:
 
-//usage:#define hush_trivial_usage NOUSAGE_STR
-//usage:#define hush_full_usage ""
-//usage:#define msh_trivial_usage NOUSAGE_STR
-//usage:#define msh_full_usage ""
-//usage:#define sh_trivial_usage NOUSAGE_STR
-//usage:#define sh_full_usage ""
-//usage:#define bash_trivial_usage NOUSAGE_STR
-//usage:#define bash_full_usage ""
+//applet:IF_HUSH(APPLET(hush, BB_DIR_BIN, BB_SUID_DROP))
+//applet:IF_MSH(APPLET(msh, BB_DIR_BIN, BB_SUID_DROP))
+//applet:IF_FEATURE_SH_IS_HUSH(APPLET_ODDNAME(sh, hush, BB_DIR_BIN, BB_SUID_DROP, sh))
+//applet:IF_FEATURE_BASH_IS_HUSH(APPLET_ODDNAME(bash, hush, BB_DIR_BIN, BB_SUID_DROP, bash))
+
+//kbuild:lib-$(CONFIG_HUSH) += hush.o match.o shell_common.o
+//kbuild:lib-$(CONFIG_HUSH_RANDOM_SUPPORT) += random.o
+
+/* -i (interactive) and -s (read stdin) are also accepted,
+ * but currently do nothing, therefore aren't shown in help.
+ * NOMMU-specific options are not meant to be used by users,
+ * therefore we don't show them either.
+ */
+//usage:#define hush_trivial_usage
+//usage:	"[-nx] [-c 'SCRIPT' [ARG0 [ARGS]] / FILE [ARGS]]"
+//usage:#define hush_full_usage "\n\n"
+//usage:	"Unix shell interpreter"
+
+//usage:#define msh_trivial_usage hush_trivial_usage
+//usage:#define msh_full_usage hush_full_usage
+
+//usage:#if ENABLE_FEATURE_SH_IS_HUSH
+//usage:# define sh_trivial_usage hush_trivial_usage
+//usage:# define sh_full_usage    hush_full_usage
+//usage:#endif
+//usage:#if ENABLE_FEATURE_BASH_IS_HUSH
+//usage:# define bash_trivial_usage hush_trivial_usage
+//usage:# define bash_full_usage    hush_full_usage
+//usage:#endif
 
 
 /* Build knobs */
@@ -435,7 +453,6 @@ typedef struct in_str {
 	char eof_flag; /* meaningless if ->p == NULL */
 	char peek_buf[2];
 #if ENABLE_HUSH_INTERACTIVE
-	smallint promptme;
 	smallint promptmode; /* 0: PS1, 1: PS2 */
 #endif
 	FILE *file;
@@ -667,9 +684,19 @@ struct function {
  * vi              off
  * xtrace          off
  */
-static const char o_opt_strings[] ALIGN1 = "pipefail\0";
+static const char o_opt_strings[] ALIGN1 =
+	"pipefail\0"
+	"noexec\0"
+#if ENABLE_HUSH_MODE_X
+	"xtrace\0"
+#endif
+	;
 enum {
 	OPT_O_PIPEFAIL,
+	OPT_O_NOEXEC,
+#if ENABLE_HUSH_MODE_X
+	OPT_O_XTRACE,
+#endif
 	NUM_OPT_O
 };
 
@@ -717,6 +744,11 @@ struct globals {
 # define G_saved_tty_pgrp 0
 #endif
 	char o_opt[NUM_OPT_O];
+#if ENABLE_HUSH_MODE_X
+# define G_x_mode (G.o_opt[OPT_O_XTRACE])
+#else
+# define G_x_mode 0
+#endif
 	smallint flag_SIGINT;
 #if ENABLE_HUSH_LOOPS
 	smallint flag_break_continue;
@@ -727,13 +759,6 @@ struct globals {
 	 * 1: return is invoked, skip all till end of func
 	 */
 	smallint flag_return_in_progress;
-#endif
-	smallint n_mode;
-#if ENABLE_HUSH_MODE_X
-	smallint x_mode;
-# define G_x_mode (G.x_mode)
-#else
-# define G_x_mode 0
 #endif
 	smallint exiting; /* used to prevent EXIT trap recursion */
 	/* These four support $?, $#, and $1 */
@@ -1070,17 +1095,10 @@ static void syntax_error_unterm_str(unsigned lineno, const char *s)
 	die_if_script(lineno, "syntax error: unterminated %s", s);
 }
 
-/* It so happens that all such cases are totally fatal
- * even if shell is interactive: EOF while looking for closing
- * delimiter. There is nowhere to read stuff from after that,
- * it's EOF! The only choice is to terminate.
- */
-static void syntax_error_unterm_ch(unsigned lineno, char ch) NORETURN;
 static void syntax_error_unterm_ch(unsigned lineno, char ch)
 {
 	char msg[2] = { ch, '\0' };
 	syntax_error_unterm_str(lineno, msg);
-	xfunc_die();
 }
 
 static void syntax_error_unexpected_ch(unsigned lineno, int ch)
@@ -1401,6 +1419,7 @@ static void sigexit(int sig)
 static void hush_exit(int exitcode) NORETURN;
 static void hush_exit(int exitcode)
 {
+	fflush_all();
 	if (G.exiting <= 0 && G.traps && G.traps[0] && G.traps[0][0]) {
 		/* Prevent recursion:
 		 * trap "echo Hi; exit" EXIT; exit
@@ -1881,10 +1900,16 @@ static void get_user_input(struct in_str *i)
 	/* Enable command line editing only while a command line
 	 * is actually being read */
 	do {
+		/* Unicode support should be activated even if LANG is set
+		 * _during_ shell execution, not only if it was set when
+		 * shell was started. Therefore, re-check LANG every time:
+		 */
+		reinit_unicode(get_local_var_value("LANG"));
+
 		G.flag_SIGINT = 0;
 		/* buglet: SIGINT will not make new prompt to appear _at once_,
 		 * only after <Enter>. (^C will work) */
-		r = read_line_input(prompt_str, G.user_input_buf, CONFIG_FEATURE_EDITING_MAX_LEN-1, G.line_input_state);
+		r = read_line_input(G.line_input_state, prompt_str, G.user_input_buf, CONFIG_FEATURE_EDITING_MAX_LEN-1, /*timeout*/ -1);
 		/* catch *SIGINT* etc (^C is handled by read_line_input) */
 		check_and_run_traps(0);
 	} while (r == 0 || G.flag_SIGINT); /* repeat if ^C or SIGINT */
@@ -1928,22 +1953,17 @@ static int FAST_FUNC file_get(struct in_str *i)
 		/* need to double check i->file because we might be doing something
 		 * more complicated by now, like sourcing or substituting. */
 #if ENABLE_HUSH_INTERACTIVE
-		if (G_interactive_fd && i->promptme && i->file == stdin) {
+		if (G_interactive_fd && i->file == stdin) {
 			do {
 				get_user_input(i);
 			} while (!*i->p); /* need non-empty line */
 			i->promptmode = 1; /* PS2 */
-			i->promptme = 0;
 			goto take_cached;
 		}
 #endif
 		do ch = fgetc(i->file); while (ch == '\0');
 	}
 	debug_printf("file_get: got '%c' %d\n", ch, ch);
-#if ENABLE_HUSH_INTERACTIVE
-	if (ch == '\n')
-		i->promptme = 1;
-#endif
 	return ch;
 }
 
@@ -1970,26 +1990,22 @@ static int FAST_FUNC file_peek(struct in_str *i)
 
 static void setup_file_in_str(struct in_str *i, FILE *f)
 {
+	memset(i, 0, sizeof(*i));
 	i->peek = file_peek;
 	i->get = file_get;
-#if ENABLE_HUSH_INTERACTIVE
-	i->promptme = 1;
-	i->promptmode = 0; /* PS1 */
-#endif
+	/* i->promptmode = 0; - PS1 (memset did it) */
 	i->file = f;
-	i->p = NULL;
+	/* i->p = NULL; */
 }
 
 static void setup_string_in_str(struct in_str *i, const char *s)
 {
+	memset(i, 0, sizeof(*i));
 	i->peek = static_peek;
 	i->get = static_get;
-#if ENABLE_HUSH_INTERACTIVE
-	i->promptme = 1;
-	i->promptmode = 0; /* PS1 */
-#endif
+	/* i->promptmode = 0; - PS1 (memset did it) */
 	i->p = s;
-	i->eof_flag = 0;
+	/* i->eof_flag = 0; */
 }
 
 
@@ -3516,39 +3532,40 @@ static int parse_group(o_string *dest, struct parse_context *ctx,
 
 #if ENABLE_HUSH_TICK || ENABLE_SH_MATH_SUPPORT || ENABLE_HUSH_DOLLAR_OPS
 /* Subroutines for copying $(...) and `...` things */
-static void add_till_backquote(o_string *dest, struct in_str *input, int in_dquote);
+static int add_till_backquote(o_string *dest, struct in_str *input, int in_dquote);
 /* '...' */
-static void add_till_single_quote(o_string *dest, struct in_str *input)
+static int add_till_single_quote(o_string *dest, struct in_str *input)
 {
 	while (1) {
 		int ch = i_getch(input);
 		if (ch == EOF) {
 			syntax_error_unterm_ch('\'');
-			/*xfunc_die(); - redundant */
+			return 0;
 		}
 		if (ch == '\'')
-			return;
+			return 1;
 		o_addchr(dest, ch);
 	}
 }
 /* "...\"...`..`...." - do we need to handle "...$(..)..." too? */
-static void add_till_double_quote(o_string *dest, struct in_str *input)
+static int add_till_double_quote(o_string *dest, struct in_str *input)
 {
 	while (1) {
 		int ch = i_getch(input);
 		if (ch == EOF) {
 			syntax_error_unterm_ch('"');
-			/*xfunc_die(); - redundant */
+			return 0;
 		}
 		if (ch == '"')
-			return;
+			return 1;
 		if (ch == '\\') {  /* \x. Copy both chars. */
 			o_addchr(dest, ch);
 			ch = i_getch(input);
 		}
 		o_addchr(dest, ch);
 		if (ch == '`') {
-			add_till_backquote(dest, input, /*in_dquote:*/ 1);
+			if (!add_till_backquote(dest, input, /*in_dquote:*/ 1))
+				return 0;
 			o_addchr(dest, ch);
 			continue;
 		}
@@ -3569,12 +3586,12 @@ static void add_till_double_quote(o_string *dest, struct in_str *input)
  * Example                               Output
  * echo `echo '\'TEST\`echo ZZ\`BEST`    \TESTZZBEST
  */
-static void add_till_backquote(o_string *dest, struct in_str *input, int in_dquote)
+static int add_till_backquote(o_string *dest, struct in_str *input, int in_dquote)
 {
 	while (1) {
 		int ch = i_getch(input);
 		if (ch == '`')
-			return;
+			return 1;
 		if (ch == '\\') {
 			/* \x. Copy both unless it is \`, \$, \\ and maybe \" */
 			ch = i_getch(input);
@@ -3588,7 +3605,7 @@ static void add_till_backquote(o_string *dest, struct in_str *input, int in_dquo
 		}
 		if (ch == EOF) {
 			syntax_error_unterm_ch('`');
-			/*xfunc_die(); - redundant */
+			return 0;
 		}
 		o_addchr(dest, ch);
 	}
@@ -3624,7 +3641,7 @@ static int add_till_closing_bracket(o_string *dest, struct in_str *input, unsign
 		ch = i_getch(input);
 		if (ch == EOF) {
 			syntax_error_unterm_ch(end_ch);
-			/*xfunc_die(); - redundant */
+			return 0;
 		}
 		if (ch == end_ch  IF_HUSH_BASH_COMPAT( || ch == end_char2)) {
 			if (!dbl)
@@ -3638,22 +3655,26 @@ static int add_till_closing_bracket(o_string *dest, struct in_str *input, unsign
 		o_addchr(dest, ch);
 		if (ch == '(' || ch == '{') {
 			ch = (ch == '(' ? ')' : '}');
-			add_till_closing_bracket(dest, input, ch);
+			if (!add_till_closing_bracket(dest, input, ch))
+				return 0;
 			o_addchr(dest, ch);
 			continue;
 		}
 		if (ch == '\'') {
-			add_till_single_quote(dest, input);
+			if (!add_till_single_quote(dest, input))
+				return 0;
 			o_addchr(dest, ch);
 			continue;
 		}
 		if (ch == '"') {
-			add_till_double_quote(dest, input);
+			if (!add_till_double_quote(dest, input))
+				return 0;
 			o_addchr(dest, ch);
 			continue;
 		}
 		if (ch == '`') {
-			add_till_backquote(dest, input, /*in_dquote:*/ 0);
+			if (!add_till_backquote(dest, input, /*in_dquote:*/ 0))
+				return 0;
 			o_addchr(dest, ch);
 			continue;
 		}
@@ -3662,7 +3683,7 @@ static int add_till_closing_bracket(o_string *dest, struct in_str *input, unsign
 			ch = i_getch(input);
 			if (ch == EOF) {
 				syntax_error_unterm_ch(')');
-				/*xfunc_die(); - redundant */
+				return 0;
 			}
 			o_addchr(dest, ch);
 			continue;
@@ -3733,8 +3754,8 @@ static int parse_dollar(o_string *as_string,
 		) {
  bad_dollar_syntax:
 			syntax_error_unterm_str("${name}");
-			debug_printf_parse("parse_dollar return 1: unterminated ${name}\n");
-			return 1;
+			debug_printf_parse("parse_dollar return 0: unterminated ${name}\n");
+			return 0;
 		}
 		nommu_addchr(as_string, ch);
 		ch |= quote_mask;
@@ -3790,6 +3811,8 @@ static int parse_dollar(o_string *as_string,
 					pos = dest->length;
 #if ENABLE_HUSH_DOLLAR_OPS
 				last_ch = add_till_closing_bracket(dest, input, end_ch);
+				if (last_ch == 0) /* error? */
+					return 0;
 #else
 #error Simple code to only allow ${var} is not implemented
 #endif
@@ -3834,7 +3857,8 @@ static int parse_dollar(o_string *as_string,
 			o_addchr(dest, /*quote_mask |*/ '+');
 			if (!BB_MMU)
 				pos = dest->length;
-			add_till_closing_bracket(dest, input, ')' | DOUBLE_CLOSE_CHAR_FLAG);
+			if (!add_till_closing_bracket(dest, input, ')' | DOUBLE_CLOSE_CHAR_FLAG))
+				return 0; /* error */
 			if (as_string) {
 				o_addstr(as_string, dest->data + pos);
 				o_addchr(as_string, ')');
@@ -3849,7 +3873,8 @@ static int parse_dollar(o_string *as_string,
 		o_addchr(dest, quote_mask | '`');
 		if (!BB_MMU)
 			pos = dest->length;
-		add_till_closing_bracket(dest, input, ')');
+		if (!add_till_closing_bracket(dest, input, ')'))
+			return 0; /* error */
 		if (as_string) {
 			o_addstr(as_string, dest->data + pos);
 			o_addchr(as_string, ')');
@@ -3876,8 +3901,8 @@ static int parse_dollar(o_string *as_string,
 	default:
 		o_addQchr(dest, '$');
 	}
-	debug_printf_parse("parse_dollar return 0\n");
-	return 0;
+	debug_printf_parse("parse_dollar return 1 (ok)\n");
+	return 1;
 #undef as_string
 }
 
@@ -3918,13 +3943,13 @@ static int encode_string(o_string *as_string,
 	if (ch != EOF)
 		nommu_addchr(as_string, ch);
 	if (ch == dquote_end) { /* may be only '"' or EOF */
-		debug_printf_parse("encode_string return 0\n");
-		return 0;
+		debug_printf_parse("encode_string return 1 (ok)\n");
+		return 1;
 	}
 	/* note: can't move it above ch == dquote_end check! */
 	if (ch == EOF) {
 		syntax_error_unterm_ch('"');
-		/*xfunc_die(); - redundant */
+		return 0; /* error */
 	}
 	next = '\0';
 	if (ch != '\n') {
@@ -3955,10 +3980,10 @@ static int encode_string(o_string *as_string,
 		goto again;
 	}
 	if (ch == '$') {
-		if (parse_dollar(as_string, dest, input, /*quote_mask:*/ 0x80) != 0) {
-			debug_printf_parse("encode_string return 1: "
-					"parse_dollar returned non-0\n");
-			return 1;
+		if (!parse_dollar(as_string, dest, input, /*quote_mask:*/ 0x80)) {
+			debug_printf_parse("encode_string return 0: "
+					"parse_dollar returned 0 (error)\n");
+			return 0;
 		}
 		goto again;
 	}
@@ -3967,7 +3992,8 @@ static int encode_string(o_string *as_string,
 		//unsigned pos = dest->length;
 		o_addchr(dest, SPECIAL_VAR_SYMBOL);
 		o_addchr(dest, 0x80 | '`');
-		add_till_backquote(dest, input, /*in_dquote:*/ dquote_end == '"');
+		if (!add_till_backquote(dest, input, /*in_dquote:*/ dquote_end == '"'))
+			return 0; /* error */
 		o_addchr(dest, SPECIAL_VAR_SYMBOL);
 		//debug_printf_subst("SUBST RES3 '%s'\n", dest->data + pos);
 		goto again;
@@ -4013,9 +4039,6 @@ static struct pipe *parse_stream(char **pstring,
 
  reset: /* we come back here only on syntax errors in interactive shell */
 
-#if ENABLE_HUSH_INTERACTIVE
-	input->promptmode = 0; /* PS1 */
-#endif
 	if (MAYBE_ASSIGNMENT != 0)
 		dest.o_assignment = MAYBE_ASSIGNMENT;
 	initialize_context(&ctx);
@@ -4041,8 +4064,8 @@ static struct pipe *parse_stream(char **pstring,
 			/* end_trigger == '}' case errors out earlier,
 			 * checking only ')' */
 			if (end_trigger == ')') {
-				syntax_error_unterm_ch('('); /* exits */
-				/* goto parse_error; */
+				syntax_error_unterm_ch('(');
+				goto parse_error;
 			}
 
 			if (done_word(&dest, &ctx)) {
@@ -4333,9 +4356,9 @@ static struct pipe *parse_stream(char **pstring,
 			dest.has_quoted_part = 1;
 			break;
 		case '$':
-			if (parse_dollar(&ctx.as_string, &dest, input, /*quote_mask:*/ 0) != 0) {
+			if (!parse_dollar(&ctx.as_string, &dest, input, /*quote_mask:*/ 0)) {
 				debug_printf_parse("parse_stream parse error: "
-					"parse_dollar returned non-0\n");
+					"parse_dollar returned 0 (error)\n");
 				goto parse_error;
 			}
 			break;
@@ -4345,7 +4368,7 @@ static struct pipe *parse_stream(char **pstring,
 				ch = i_getch(input);
 				if (ch == EOF) {
 					syntax_error_unterm_ch('\'');
-					/*xfunc_die(); - redundant */
+					goto parse_error;
 				}
 				nommu_addchr(&ctx.as_string, ch);
 				if (ch == '\'')
@@ -4357,7 +4380,7 @@ static struct pipe *parse_stream(char **pstring,
 			dest.has_quoted_part = 1;
 			if (dest.o_assignment == NOT_ASSIGNMENT)
 				dest.o_expflags |= EXP_FLAG_ESC_GLOB_CHARS;
-			if (encode_string(&ctx.as_string, &dest, input, '"', /*process_bkslash:*/ 1))
+			if (!encode_string(&ctx.as_string, &dest, input, '"', /*process_bkslash:*/ 1))
 				goto parse_error;
 			dest.o_expflags &= ~EXP_FLAG_ESC_GLOB_CHARS;
 			break;
@@ -4368,7 +4391,8 @@ static struct pipe *parse_stream(char **pstring,
 			o_addchr(&dest, SPECIAL_VAR_SYMBOL);
 			o_addchr(&dest, '`');
 			pos = dest.length;
-			add_till_backquote(&dest, input, /*in_dquote:*/ 0);
+			if (!add_till_backquote(&dest, input, /*in_dquote:*/ 0))
+				goto parse_error;
 # if !BB_MMU
 			o_addstr(&ctx.as_string, dest.data + pos);
 			o_addchr(&ctx.as_string, '`');
@@ -4521,7 +4545,6 @@ static struct pipe *parse_stream(char **pstring,
 		}
 		/* Discard cached input, force prompt */
 		input->p = NULL;
-		IF_HUSH_INTERACTIVE(input->promptme = 1;)
 		goto reset;
 	}
 }
@@ -4645,6 +4668,7 @@ static char *encode_then_expand_string(const char *str, int process_bkslash, int
 	 */
 	setup_string_in_str(&input, str);
 	encode_string(NULL, &dest, &input, EOF, process_bkslash);
+//TODO: error check (encode_string returns 0 on error)?
 	//bb_error_msg("'%s' -> '%s'", str, dest.data);
 	exp_str = expand_string_to_string(dest.data, /*unbackslash:*/ do_unbackslash);
 	//bb_error_msg("'%s' -> '%s'", dest.data, exp_str);
@@ -5521,6 +5545,10 @@ static void parse_and_run_stream(struct in_str *inp, int end_trigger)
 	while (1) {
 		struct pipe *pipe_list;
 
+#if ENABLE_HUSH_INTERACTIVE
+		if (end_trigger == ';')
+			inp->promptmode = 0; /* PS1 */
+#endif
 		pipe_list = parse_stream(NULL, inp, end_trigger);
 		if (!pipe_list) { /* EOF */
 			if (empty)
@@ -5531,6 +5559,10 @@ static void parse_and_run_stream(struct in_str *inp, int end_trigger)
 		debug_printf_exec("parse_and_run_stream: run_and_free_list\n");
 		run_and_free_list(pipe_list);
 		empty = 0;
+#if ENABLE_HUSH_FUNCTIONS
+		if (G.flag_return_in_progress == 1)
+			break;
+#endif
 	}
 }
 
@@ -6097,10 +6129,13 @@ static void exec_builtin(char ***to_free,
 		char **argv)
 {
 #if BB_MMU
-	int rcode = x->b_function(argv);
+	int rcode;
+	fflush_all();
+	rcode = x->b_function(argv);
 	fflush_all();
 	_exit(rcode);
 #else
+	fflush_all();
 	/* On NOMMU, we must never block!
 	 * Example: { sleep 99 | read line; } & echo Ok
 	 */
@@ -6492,13 +6527,15 @@ static int checkjobs(struct pipe *fg_pipe)
 					fg_pipe->alive_cmds--;
 					ex = WEXITSTATUS(status);
 					/* bash prints killer signal's name for *last*
-					 * process in pipe (prints just newline for SIGINT).
+					 * process in pipe (prints just newline for SIGINT/SIGPIPE).
 					 * Mimic this. Example: "sleep 5" + (^\ or kill -QUIT)
 					 */
 					if (WIFSIGNALED(status)) {
 						int sig = WTERMSIG(status);
 						if (i == fg_pipe->num_cmds-1)
-							printf("%s\n", sig == SIGINT ? "" : get_signame(sig));
+							/* TODO: use strsignal() instead for bash compat? but that's bloat... */
+							printf("%s\n", sig == SIGINT || sig == SIGPIPE ? "" : get_signame(sig));
+						/* TODO: if (WCOREDUMP(status)) + " (core dumped)"; */
 						/* TODO: MIPS has 128 sigs (1..128), what if sig==128 here?
 						 * Maybe we need to use sig | 128? */
 						ex = sig + 128;
@@ -6607,7 +6644,7 @@ static int checkjobs_and_fg_shell(struct pipe *fg_pipe)
  * cmd ; ...   { list } ; ...
  * cmd && ...  { list } && ...
  * cmd || ...  { list } || ...
- * If it is, then we can run cmd as a builtin, NOFORK [do we do this?],
+ * If it is, then we can run cmd as a builtin, NOFORK,
  * or (if SH_STANDALONE) an applet, and we can run the { list }
  * with run_list. If it isn't one of these, we fork and exec cmd.
  *
@@ -6789,13 +6826,12 @@ static NOINLINE int run_pipe(struct pipe *pi)
 		}
 
 		/* Expand the rest into (possibly) many strings each */
-		if (0) {}
 #if ENABLE_HUSH_BASH_COMPAT
-		else if (command->cmd_type == CMD_SINGLEWORD_NOGLOB) {
+		if (command->cmd_type == CMD_SINGLEWORD_NOGLOB) {
 			argv_expanded = expand_strvec_to_strvec_singleword_noglob(argv + command->assignment_cnt);
-		}
+		} else
 #endif
-		else {
+		{
 			argv_expanded = expand_strvec_to_strvec(argv + command->assignment_cnt);
 		}
 
@@ -6825,6 +6861,7 @@ static NOINLINE int run_pipe(struct pipe *pi)
 				if (!funcp) {
 					debug_printf_exec(": builtin '%s' '%s'...\n",
 						x->b_cmd, argv_expanded[1]);
+					fflush_all();
 					rcode = x->b_function(argv_expanded) & 0xff;
 					fflush_all();
 				}
@@ -6857,7 +6894,7 @@ static NOINLINE int run_pipe(struct pipe *pi)
 			return rcode;
 		}
 
-		if (ENABLE_FEATURE_SH_STANDALONE) {
+		if (ENABLE_FEATURE_SH_NOFORK) {
 			int n = find_applet_by_name(argv_expanded[0]);
 			if (n >= 0 && APPLET_IS_NOFORK(n)) {
 				rcode = redirect_and_varexp_helper(&new_env, &old_vars, command, squirrel, argv_expanded);
@@ -7337,7 +7374,7 @@ static int run_and_free_list(struct pipe *pi)
 {
 	int rcode = 0;
 	debug_printf_exec("run_and_free_list entered\n");
-	if (!G.n_mode) {
+	if (!G.o_opt[OPT_O_NOEXEC]) {
 		debug_printf_exec(": run_list: 1st pipe with %d cmds\n", pi->num_cmds);
 		rcode = run_list(pi);
 	}
@@ -7440,7 +7477,7 @@ static int set_mode(int state, char mode, const char *o_opt)
 	int idx;
 	switch (mode) {
 	case 'n':
-		G.n_mode = state;
+		G.o_opt[OPT_O_NOEXEC] = state;
 		break;
 	case 'x':
 		IF_HUSH_MODE_X(G_x_mode = state;)
@@ -7634,6 +7671,7 @@ int hush_main(int argc, char **argv)
 					G.global_argc -= builtin_argc; /* skip [BARGV...] "" */
 					G.global_argv += builtin_argc;
 					G.global_argv[-1] = NULL; /* replace "" */
+					fflush_all();
 					G.last_exitcode = x->b_function(argv + optind - 1);
 				}
 				goto final_return;
@@ -8592,6 +8630,8 @@ static int FAST_FUNC builtin_source(char **argv)
 #endif
 	save_and_replace_G_args(&sv, argv);
 
+//TODO: syntax errors in sourced file should never abort the "calling" script.
+//Try: bash -c '. ./bad_file; echo YES'
 	parse_and_run_file(input);
 	fclose(input);
 

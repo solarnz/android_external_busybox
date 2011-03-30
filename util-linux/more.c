@@ -111,7 +111,7 @@ int more_main(int argc UNUSED_PARAM, char **argv)
  loop_top:
 			if (input != 'r' && please_display_more_prompt) {
 				len = printf("--More-- ");
-				if (st.st_size > 0) {
+				if (st.st_size != 0) {
 					len += printf("(%u%% of %"FILESIZE_FMT"u bytes)",
 						(int) (ftello(file)*100 / st.st_size),
 						st.st_size);
@@ -157,7 +157,7 @@ int more_main(int argc UNUSED_PARAM, char **argv)
 			/* Crudely convert tabs into spaces, which are
 			 * a bajillion times easier to deal with. */
 			if (c == '\t') {
-				spaces = CONVERTED_TAB_SIZE - 1;
+				spaces = ((unsigned)~len) % CONVERTED_TAB_SIZE;
 				c = ' ';
 			}
 
@@ -189,6 +189,7 @@ int more_main(int argc UNUSED_PARAM, char **argv)
 			}
 			/* My small mind cannot fathom backspaces and UTF-8 */
 			putchar(c);
+			die_if_ferror_stdout(); /* if tty was destroyed (closed xterm, etc) */
 		}
 		fclose(file);
 		fflush_all();

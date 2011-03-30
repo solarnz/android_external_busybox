@@ -10,10 +10,15 @@
 /* Assume all these functions exist by default.  Platforms where it is not
  * true will #undef them below.
  */
+#define HAVE_CLEARENV 1
+#define HAVE_FDATASYNC 1
 #define HAVE_FDPRINTF 1
 #define HAVE_MEMRCHR 1
 #define HAVE_MKDTEMP 1
+#define HAVE_PTSNAME_R 1
 #define HAVE_SETBIT 1
+#define HAVE_SIGHANDLER_T 1
+#define HAVE_STPCPY 1
 #define HAVE_STRCASESTR 1
 #define HAVE_STRCHRNUL 1
 #define HAVE_STRSEP 1
@@ -217,14 +222,15 @@
 
 /* ---- Unaligned access ------------------------------------ */
 
+#include <stdint.h>
+typedef int      bb__aliased_int      FIX_ALIASING;
+typedef uint16_t bb__aliased_uint16_t FIX_ALIASING;
+typedef uint32_t bb__aliased_uint32_t FIX_ALIASING;
+
 /* NB: unaligned parameter should be a pointer, aligned one -
  * a lvalue. This makes it more likely to not swap them by mistake
  */
 #if defined(i386) || defined(__x86_64__) || defined(__powerpc__)
-# include <stdint.h>
-typedef int      bb__aliased_int      FIX_ALIASING;
-typedef uint16_t bb__aliased_uint16_t FIX_ALIASING;
-typedef uint32_t bb__aliased_uint32_t FIX_ALIASING;
 # define move_from_unaligned_int(v, intp) ((v) = *(bb__aliased_int*)(intp))
 # define move_from_unaligned16(v, u16p) ((v) = *(bb__aliased_uint16_t*)(u16p))
 # define move_from_unaligned32(v, u32p) ((v) = *(bb__aliased_uint32_t*)(u32p))
@@ -251,11 +257,18 @@ typedef uint32_t bb__aliased_uint32_t FIX_ALIASING;
 #if (defined __digital__ && defined __unix__) \
  || defined __APPLE__ \
  || defined __FreeBSD__ || defined __OpenBSD__ || defined __NetBSD__
+# undef HAVE_CLEARENV
+# undef HAVE_FDATASYNC
 # undef HAVE_MNTENT_H
+# undef HAVE_PTSNAME_R
 # undef HAVE_SYS_STATFS_H
+# undef HAVE_SIGHANDLER_T
+# undef HAVE_XTABS
+# undef HAVE_FDPRINTF
 #else
 # define HAVE_MNTENT_H 1
 # define HAVE_SYS_STATFS_H 1
+# define HAVE_XTABS 1
 #endif
 
 /*----- Kernel versioning ------------------------------------*/
@@ -345,13 +358,16 @@ typedef unsigned smalluint;
 #  define ADJ_TICK MOD_CLKB
 # endif
 
+# undef HAVE_STPCPY
+
 #else
 
 # define bb_setpgrp() setpgrp()
 
 #endif
 
-#if defined(__GLIBC__)
+#include <unistd.h>
+#if (defined(_POSIX_VERSION) && _POSIX_VERSION >= 200809L) || defined(__GLIBC__)
 # define fdprintf dprintf
 #endif
 
@@ -364,6 +380,7 @@ typedef unsigned smalluint;
 # undef HAVE_MEMRCHR
 # undef HAVE_MKDTEMP
 # undef HAVE_SETBIT
+# undef HAVE_STPCPY
 # undef HAVE_STRCASESTR
 # undef HAVE_STRCHRNUL
 # undef HAVE_STRSEP
@@ -400,6 +417,14 @@ extern char *mkdtemp(char *template) FAST_FUNC;
 #ifndef HAVE_SETBIT
 # define setbit(a, b)  ((a)[(b) >> 3] |= 1 << ((b) & 7))
 # define clrbit(a, b)  ((a)[(b) >> 3] &= ~(1 << ((b) & 7)))
+#endif
+
+#ifndef HAVE_SIGHANDLER_T
+typedef void (*sighandler_t)(int);
+#endif
+
+#ifndef HAVE_STPCPY
+extern char *stpcpy(char *p, const char *to_add) FAST_FUNC;
 #endif
 
 #ifndef HAVE_STRCASESTR
