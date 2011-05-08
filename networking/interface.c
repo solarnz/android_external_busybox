@@ -32,7 +32,7 @@
  */
 #include <net/if.h>
 #include <net/if_arp.h>
-#ifndef __UCLIBC__
+#if !defined(__UCLIBC__) && !defined(__BIONIC__)
 # include <net/ethernet.h>
 #else
 # include <linux/if_ether.h>

@@ -384,6 +384,7 @@ typedef unsigned smalluint;
 #if defined(__BIONIC__)
 # undef HAVE_STRCHRNUL
 # undef HAVE_FDPRINTF
+# undef HAVE_DPRINTF
 #endif
 
 #if defined(__FreeBSD__)
