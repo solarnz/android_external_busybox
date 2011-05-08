@@ -37,7 +37,7 @@ void FAST_FUNC reinit_unicode(const char *LANG)
 	unicode_status = (width == 1 ? UNICODE_ON : UNICODE_OFF);
 }
 
-void FAST_FUNC init_unicode(void)
+void FAST_FUNC init_unicode()
 {
 	if (unicode_status == UNICODE_UNKNOWN)
 		reinit_unicode(getenv("LANG"));
@@ -56,7 +56,7 @@ void FAST_FUNC reinit_unicode(const char *LANG)
 	unicode_status = UNICODE_ON;
 }
 
-void FAST_FUNC init_unicode(void)
+void FAST_FUNC init_unicode()
 {
 	if (unicode_status == UNICODE_UNKNOWN)
 		reinit_unicode(getenv("LANG"));
@@ -1006,9 +1006,11 @@ static char* FAST_FUNC unicode_conv_to_printable2(uni_stat_t *stats, const char 
 		} else {
 			d = dst = xstrndup(src, width);
 			while (*d) {
+#if !ENABLE_UNICODE_PRESERVE_BROKEN
 				unsigned char c = *d;
 				if (c < ' ' || c >= 0x7f)
 					*d = '?';
+#endif
 				d++;
 			}
 		}
