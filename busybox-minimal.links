@@ -103,6 +103,7 @@
 /bin/run-parts
 /bin/sed
 /bin/seq
+/bin/setserial
 /bin/setsid
 /bin/sh
 /bin/sha1sum

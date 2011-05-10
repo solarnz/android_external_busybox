@@ -14,6 +14,12 @@
 uint8_t unicode_status;
 #endif
 
+#ifdef __BIONIC__
+# define VOID
+#else
+# define VOID void
+#endif
+
 /* This file is compiled only if UNICODE_SUPPORT is on.
  * We check other options and decide whether to use libc support
  * via locale, or use our own logic:
@@ -37,7 +43,7 @@ void FAST_FUNC reinit_unicode(const char *LANG)
 	unicode_status = (width == 1 ? UNICODE_ON : UNICODE_OFF);
 }
 
-void FAST_FUNC init_unicode()
+void FAST_FUNC init_unicode(VOID)
 {
 	if (unicode_status == UNICODE_UNKNOWN)
 		reinit_unicode(getenv("LANG"));
@@ -56,7 +62,7 @@ void FAST_FUNC reinit_unicode(const char *LANG)
 	unicode_status = UNICODE_ON;
 }
 
-void FAST_FUNC init_unicode()
+void FAST_FUNC init_unicode(VOID)
 {
 	if (unicode_status == UNICODE_UNKNOWN)
 		reinit_unicode(getenv("LANG"));
