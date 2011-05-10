@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Busybox version: 1.19.0-froyo
-# Sun May  8 14:38:05 2011
+# Wed May 11 00:50:32 2011
 #
 CONFIG_HAVE_DOT_CONFIG=y
 
@@ -470,9 +470,9 @@ CONFIG_LAST_SYSTEM_ID=0
 #
 # Linux Ext2 FS Progs
 #
-# CONFIG_CHATTR is not set
+CONFIG_CHATTR=y
 # CONFIG_FSCK is not set
-# CONFIG_LSATTR is not set
+CONFIG_LSATTR=y
 # CONFIG_TUNE2FS is not set
 
 #
