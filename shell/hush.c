@@ -795,8 +795,15 @@ struct globals {
 	/* which signals have non-DFL handler (even with no traps set)? */
 	unsigned non_DFL_mask;
 	char **traps; /* char *traps[NSIG] */
-	sigset_t blocked_set;
+	/* Signal mask on the entry to the (top-level) shell. Never modified. */
 	sigset_t inherited_set;
+	/* Starts equal to inherited_set,
+	 * but shell-special signals are added and SIGCHLD is removed.
+	 * When a trap is set/cleared, signal is added to/removed from it:
+	 */
+	sigset_t blocked_set;
+	/* Used by read() */
+	sigset_t detected_set;
 #if HUSH_DEBUG
 	unsigned long memleak_value;
 	int debug_indent;
@@ -1319,6 +1326,8 @@ static void restore_G_args(save_arg_t *sv, char **argv)
  *    "echo $$; sleep 5 & wait; ls -l" + "kill -INT <pid>"
  *    Example 3: this does not wait 5 sec, but executes ls:
  *    "sleep 5; ls -l" + press ^C
+ *    Example 4: this does not wait and does not execute ls:
+ *    "sleep 5 & wait; ls -l" + press ^C
  *
  * (What happens to signals which are IGN on shell start?)
  * (What happens with signal mask on shell start?)
@@ -1369,6 +1378,11 @@ enum {
 		| (1 << SIGTSTP)
 #endif
 };
+
+static void sigprocmask_set(sigset_t *set)
+{
+	sigprocmask(SIG_SETMASK, set, NULL);
+}
 
 #if ENABLE_HUSH_FAST
 static void SIGCHLD_handler(int sig UNUSED_PARAM)
@@ -1471,13 +1485,24 @@ static int check_and_run_traps(int sig)
 	int last_sig = 0;
 
 	if (sig)
-		goto jump_in;
+		goto got_sig;
+
 	while (1) {
+		if (!sigisemptyset(&G.detected_set)) {
+			sig = 0;
+			do {
+				sig++;
+				if (sigismember(&G.detected_set, sig)) {
+					sigdelset(&G.detected_set, sig);
+					goto got_sig;
+				}
+			} while (sig < NSIG);
+		}
+
 		sig = sigtimedwait(&G.blocked_set, NULL, &zero_timespec);
 		if (sig <= 0)
 			break;
- jump_in:
-		last_sig = sig;
+ got_sig:
 		if (G.traps && G.traps[sig]) {
 			if (G.traps[sig][0]) {
 				/* We have user-defined handler */
@@ -1488,6 +1513,7 @@ static int check_and_run_traps(int sig)
 				save_rcode = G.last_exitcode;
 				builtin_eval(argv);
 				G.last_exitcode = save_rcode;
+				last_sig = sig;
 			} /* else: "" trap, ignoring signal */
 			continue;
 		}
@@ -1503,6 +1529,7 @@ static int check_and_run_traps(int sig)
 			/* Builtin was ^C'ed, make it look prettier: */
 			bb_putchar('\n');
 			G.flag_SIGINT = 1;
+			last_sig = sig;
 			break;
 #if ENABLE_HUSH_JOB
 		case SIGHUP: {
@@ -1521,6 +1548,11 @@ static int check_and_run_traps(int sig)
 #endif
 		default: /* ignored: */
 			/* SIGTERM, SIGQUIT, SIGTTIN, SIGTTOU, SIGTSTP */
+			/* note:
+			 * we dont do 'last_sig = sig' here -> NOT returning this sig.
+			 * example: wait is not interrupted by TERM
+			 * in interactive shell, because TERM is ignored.
+			 */
 			break;
 		}
 	}
@@ -1921,11 +1953,18 @@ static void get_user_input(struct in_str *i)
 # else
 	do {
 		G.flag_SIGINT = 0;
-		fputs(prompt_str, stdout);
+		if (i->last_char == '\0' || i->last_char == '\n') {
+			/* Why check_and_run_traps here? Try this interactively:
+			 * $ trap 'echo INT' INT; (sleep 2; kill -INT $$) &
+			 * $ <[enter], repeatedly...>
+			 * Without check_and_run_traps, handler never runs.
+			 */
+			check_and_run_traps(0);
+			fputs(prompt_str, stdout);
+		}
 		fflush_all();
 		G.user_input_buf[0] = r = fgetc(i->file);
 		/*G.user_input_buf[1] = '\0'; - already is and never changed */
-//do we need check_and_run_traps(0)? (maybe only if stdin)
 	} while (G.flag_SIGINT);
 	i->eof_flag = (r == EOF);
 # endif
@@ -3322,6 +3361,7 @@ static char *fetch_till_str(o_string *as_string,
 	int ch;
 
 	goto jump_in;
+
 	while (1) {
 		ch = i_getch(input);
 		if (ch != EOF)
@@ -5343,18 +5383,15 @@ static void reset_traps_to_defaults(void)
 	 * Stupid. It can be done with *single* &= op, but we can't use
 	 * the fact that G.blocked_set is implemented as a bitmask
 	 * in libc... */
-	mask = (SPECIAL_INTERACTIVE_SIGS >> 1);
-	sig = 1;
-	while (1) {
+	mask = SPECIAL_INTERACTIVE_SIGS;
+	sig = 0;
+	while ((mask >>= 1) != 0) {
+		sig++;
 		if (mask & 1) {
 			/* Careful. Only if no trap or trap is not "" */
 			if (!G.traps || !G.traps[sig] || G.traps[sig][0])
 				sigdelset(&G.blocked_set, sig);
 		}
-		mask >>= 1;
-		if (!mask)
-			break;
-		sig++;
 	}
 	/* Our homegrown sig mask is saner to work with :) */
 	G.non_DFL_mask &= ~SPECIAL_INTERACTIVE_SIGS;
@@ -5376,7 +5413,7 @@ static void reset_traps_to_defaults(void)
 			continue;
 		sigdelset(&G.blocked_set, sig);
 	}
-	sigprocmask(SIG_SETMASK, &G.blocked_set, NULL);
+	sigprocmask_set(&G.blocked_set);
 }
 
 #else /* !BB_MMU */
@@ -5506,7 +5543,7 @@ static void re_execute_shell(char ***to_free, const char *s,
 
  do_exec:
 	debug_printf_exec("re_execute_shell pid:%d cmd:'%s'\n", getpid(), s);
-	sigprocmask(SIG_SETMASK, &G.inherited_set, NULL);
+	sigprocmask_set(&G.inherited_set);
 	execve(bb_busybox_exec_path, argv, pp);
 	/* Fallback. Useful for init=/bin/hush usage etc */
 	if (argv[0][0] == '/')
@@ -6160,7 +6197,7 @@ static void execvp_or_die(char **argv) NORETURN;
 static void execvp_or_die(char **argv)
 {
 	debug_printf_exec("execing '%s'\n", argv[0]);
-	sigprocmask(SIG_SETMASK, &G.inherited_set, NULL);
+	sigprocmask_set(&G.inherited_set);
 	execvp(argv[0], argv);
 	bb_perror_msg("can't execute '%s'", argv[0]);
 	_exit(127); /* bash compat */
@@ -6292,7 +6329,7 @@ static NOINLINE void pseudo_exec_argv(nommu_save_t *nommu_save,
 # endif
 			/* Re-exec ourselves */
 			debug_printf_exec("re-execing applet '%s'\n", argv[0]);
-			sigprocmask(SIG_SETMASK, &G.inherited_set, NULL);
+			sigprocmask_set(&G.inherited_set);
 			execv(bb_busybox_exec_path, argv);
 			/* If they called chroot or otherwise made the binary no longer
 			 * executable, fall through */
@@ -7400,83 +7437,88 @@ static void init_sigmasks(void)
 {
 	unsigned sig;
 	unsigned mask;
-	sigset_t old_blocked_set;
-
-	if (!G.inherited_set_is_saved) {
-		sigprocmask(SIG_SETMASK, NULL, &G.blocked_set);
-		G.inherited_set = G.blocked_set;
-	}
-	old_blocked_set = G.blocked_set;
-
-	mask = (1 << SIGQUIT);
-	if (G_interactive_fd) {
-		mask = (1 << SIGQUIT) | SPECIAL_INTERACTIVE_SIGS;
-		if (G_saved_tty_pgrp) /* we have ctty, job control sigs work */
-			mask |= SPECIAL_JOB_SIGS;
-	}
-	G.non_DFL_mask = mask;
-
-	sig = 0;
-	while (mask) {
-		if (mask & 1)
-			sigaddset(&G.blocked_set, sig);
-		mask >>= 1;
-		sig++;
-	}
-	sigdelset(&G.blocked_set, SIGCHLD);
-
-	if (memcmp(&old_blocked_set, &G.blocked_set, sizeof(old_blocked_set)) != 0)
-		sigprocmask(SIG_SETMASK, &G.blocked_set, NULL);
 
 	/* POSIX allows shell to re-enable SIGCHLD
 	 * even if it was SIG_IGN on entry */
 #if ENABLE_HUSH_FAST
 	G.count_SIGCHLD++; /* ensure it is != G.handled_SIGCHLD */
-	if (!G.inherited_set_is_saved)
+#endif
+	if (!G.inherited_set_is_saved) {
+#if ENABLE_HUSH_FAST
 		signal(SIGCHLD, SIGCHLD_handler);
 #else
-	if (!G.inherited_set_is_saved)
 		signal(SIGCHLD, SIG_DFL);
 #endif
+		sigprocmask(SIG_SETMASK, NULL, &G.blocked_set);
+		G.inherited_set = G.blocked_set;
+	}
+
+	/* Which signals are shell-special? */
+	mask = (1 << SIGQUIT);
+	if (G_interactive_fd) {
+		mask |= SPECIAL_INTERACTIVE_SIGS;
+		if (G_saved_tty_pgrp) /* we have ctty, job control sigs work */
+			mask |= SPECIAL_JOB_SIGS;
+	}
+	G.non_DFL_mask = mask;
+
+	/* Block them. And unblock SIGCHLD */
+	sig = 0;
+	while ((mask >>= 1) != 0) {
+		sig++;
+		if (mask & 1)
+			sigaddset(&G.blocked_set, sig);
+	}
+	sigdelset(&G.blocked_set, SIGCHLD);
+
+	if (memcmp(&G.inherited_set, &G.blocked_set, sizeof(G.inherited_set)) != 0)
+		sigprocmask_set(&G.blocked_set);
 
 	G.inherited_set_is_saved = 1;
 }
 
 #if ENABLE_HUSH_JOB
 /* helper */
-static void maybe_set_to_sigexit(int sig)
+/* Set handlers to restore tty pgrp and exit */
+static void set_fatal_handlers_to_sigexit(void)
 {
 	void (*handler)(int);
+	unsigned fatal_sigs, sig;
+
+	/* We will restore tty pgrp on these signals */
+	fatal_sigs = 0
+		+ (1 << SIGILL ) * HUSH_DEBUG
+		+ (1 << SIGFPE ) * HUSH_DEBUG
+		+ (1 << SIGBUS ) * HUSH_DEBUG
+		+ (1 << SIGSEGV) * HUSH_DEBUG
+		+ (1 << SIGTRAP) * HUSH_DEBUG
+		+ (1 << SIGABRT)
+	/* bash 3.2 seems to handle these just like 'fatal' ones */
+		+ (1 << SIGPIPE)
+		+ (1 << SIGALRM)
+	/* if we are interactive, SIGHUP, SIGTERM and SIGINT are masked.
+	 * if we aren't interactive... but in this case
+	 * we never want to restore pgrp on exit, and this fn is not called */
+		/*+ (1 << SIGHUP )*/
+		/*+ (1 << SIGTERM)*/
+		/*+ (1 << SIGINT )*/
+	;
+
 	/* non_DFL_mask'ed signals are, well, masked,
 	 * no need to set handler for them.
 	 */
-	if (!((G.non_DFL_mask >> sig) & 1)) {
+	fatal_sigs &= ~G.non_DFL_mask;
+
+        /* For each sig in fatal_sigs... */
+	sig = 0;
+	while ((fatal_sigs >>= 1) != 0) {
+		sig++;
+		if (!(fatal_sigs & 1))
+			continue;
 		handler = signal(sig, sigexit);
 		if (handler == SIG_IGN) /* oops... restore back to IGN! */
 			signal(sig, handler);
 	}
-}
-/* Set handlers to restore tty pgrp and exit */
-static void set_fatal_handlers(void)
-{
-	/* We _must_ restore tty pgrp on fatal signals */
-	if (HUSH_DEBUG) {
-		maybe_set_to_sigexit(SIGILL );
-		maybe_set_to_sigexit(SIGFPE );
-		maybe_set_to_sigexit(SIGBUS );
-		maybe_set_to_sigexit(SIGSEGV);
-		maybe_set_to_sigexit(SIGTRAP);
-	} /* else: hush is perfect. what SEGV? */
-	maybe_set_to_sigexit(SIGABRT);
-	/* bash 3.2 seems to handle these just like 'fatal' ones */
-	maybe_set_to_sigexit(SIGPIPE);
-	maybe_set_to_sigexit(SIGALRM);
-	/* if we are interactive, SIGHUP, SIGTERM and SIGINT are masked.
-	 * if we aren't interactive... but in this case
-	 * we never want to restore pgrp on exit, and this fn is not called */
-	/*maybe_set_to_sigexit(SIGHUP );*/
-	/*maybe_set_to_sigexit(SIGTERM);*/
-	/*maybe_set_to_sigexit(SIGINT );*/
 }
 #endif
 
@@ -7734,7 +7776,7 @@ int hush_main(int argc, char **argv)
 						sigaddset(&G.blocked_set, sig);
 					}
 				}
-				sigprocmask(SIG_SETMASK, &G.blocked_set, NULL);
+				sigprocmask_set(&G.blocked_set);
 			}
 # if ENABLE_HUSH_LOOPS
 			optarg++;
@@ -7875,7 +7917,7 @@ int hush_main(int argc, char **argv)
 
 		if (G_saved_tty_pgrp) {
 			/* Set other signals to restore saved_tty_pgrp */
-			set_fatal_handlers();
+			set_fatal_handlers_to_sigexit();
 			/* Put ourselves in our own process group
 			 * (bash, too, does this only if ctty is available) */
 			bb_setpgrp(); /* is the same as setpgid(our_pid, our_pid); */
@@ -8266,7 +8308,7 @@ static int FAST_FUNC builtin_trap(char **argv)
 				sigdelset(&G.blocked_set, sig);
 			}
 		}
-		sigprocmask(SIG_SETMASK, &G.blocked_set, NULL);
+		sigprocmask_set(&G.blocked_set);
 		return ret;
 	}
 
@@ -8467,6 +8509,32 @@ static int FAST_FUNC builtin_pwd(char **argv UNUSED_PARAM)
 	return EXIT_SUCCESS;
 }
 
+/* Interruptibility of read builtin in bash
+ * (tested on bash-4.2.8 by sending signals (not by ^C)):
+ *
+ * Empty trap makes read ignore corresponding signal, for any signal.
+ *
+ * SIGINT:
+ * - terminates non-interactive shell;
+ * - interrupts read in interactive shell;
+ * if it has non-empty trap:
+ * - executes trap and returns to command prompt in interactive shell;
+ * - executes trap and returns to read in non-interactive shell;
+ * SIGTERM:
+ * - is ignored (does not interrupt) read in interactive shell;
+ * - terminates non-interactive shell;
+ * if it has non-empty trap:
+ * - executes trap and returns to read;
+ * SIGHUP:
+ * - terminates shell (regardless of interactivity);
+ * if it has non-empty trap:
+ * - executes trap and returns to read;
+ */
+/* helper */
+static void record_signal(int sig)
+{
+	sigaddset(&G.detected_set, sig);
+}
 static int FAST_FUNC builtin_read(char **argv)
 {
 	const char *r;
@@ -8474,7 +8542,9 @@ static int FAST_FUNC builtin_read(char **argv)
 	char *opt_p = NULL;
 	char *opt_t = NULL;
 	char *opt_u = NULL;
+	const char *ifs;
 	int read_flags;
+	sigset_t saved_blkd_set;
 
 	/* "!": do not abort on errors.
 	 * Option string must start with "sr" to match BUILTIN_READ_xxx
@@ -8483,16 +8553,64 @@ static int FAST_FUNC builtin_read(char **argv)
 	if (read_flags == (uint32_t)-1)
 		return EXIT_FAILURE;
 	argv += optind;
+	ifs = get_local_var_value("IFS"); /* can be NULL */
+
+ again:
+	/* We need to temporarily unblock and record signals around read */
+
+	saved_blkd_set = G.blocked_set;
+	{
+		unsigned sig;
+		struct sigaction sa, old_sa;
+
+		memset(&sa, 0, sizeof(sa));
+		sigfillset(&sa.sa_mask);
+		/*sa.sa_flags = 0;*/
+		sa.sa_handler = record_signal;
+
+		sig = 0;
+		do {
+			sig++;
+			if (sigismember(&G.blocked_set, sig)) {
+				char *sig_trap = (G.traps && G.traps[sig]) ? G.traps[sig] : NULL;
+				/* If has a nonempty trap... */
+				if ((sig_trap && sig_trap[0])
+				/* ...or has no trap and is SIGINT or SIGHUP */
+				 || (!sig_trap && (sig == SIGINT || sig == SIGHUP))
+				) {
+					sigaction(sig, &sa, &old_sa);
+					if (old_sa.sa_handler == SIG_IGN) /* oops... restore back to IGN! */
+						sigaction_set(sig, &old_sa);
+					else
+						sigdelset(&G.blocked_set, sig);
+				}
+			}
+		} while (sig < NSIG-1);
+	}
+
+	if (memcmp(&saved_blkd_set, &G.blocked_set, sizeof(saved_blkd_set)) != 0)
+		sigprocmask_set(&G.blocked_set);
 
 	r = shell_builtin_read(set_local_var_from_halves,
 		argv,
-		get_local_var_value("IFS"), /* can be NULL */
+		ifs,
 		read_flags,
 		opt_n,
 		opt_p,
 		opt_t,
 		opt_u
 	);
+
+	if (memcmp(&saved_blkd_set, &G.blocked_set, sizeof(saved_blkd_set)) != 0) {
+		G.blocked_set = saved_blkd_set;
+		sigprocmask_set(&G.blocked_set);
+	}
+
+	if ((uintptr_t)r == 1 && errno == EINTR) {
+		unsigned sig = check_and_run_traps(0);
+		if (sig && sig != SIGINT)
+			goto again;
+	}
 
 	if ((uintptr_t)r > 1) {
 		bb_error_msg("%s", r);
@@ -8747,7 +8865,7 @@ static int FAST_FUNC builtin_wait(char **argv)
 		 * $
 		 */
 		sigaddset(&G.blocked_set, SIGCHLD);
-		sigprocmask(SIG_SETMASK, &G.blocked_set, NULL);
+		sigprocmask_set(&G.blocked_set);
 		while (1) {
 			checkjobs(NULL);
 			if (errno == ECHILD)
@@ -8764,7 +8882,7 @@ static int FAST_FUNC builtin_wait(char **argv)
 			}
 		}
 		sigdelset(&G.blocked_set, SIGCHLD);
-		sigprocmask(SIG_SETMASK, &G.blocked_set, NULL);
+		sigprocmask_set(&G.blocked_set);
 		return ret;
 	}
 
