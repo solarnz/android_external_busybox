@@ -3,13 +3,13 @@ LOCAL_PATH := $(call my-dir)
 
 # Make a static library for clearsilver's regex. This prevents multiple
 # symbol definition error.... OR NOT
-# include $(CLEAR_VARS)
-# LOCAL_SRC_FILES := ../clearsilver/util/regex/regex.c
-# LOCAL_MODULE := libclearsilverregex
-# LOCAL_C_INCLUDES := \
-# 	external/clearsilver \
-# 	external/clearsilver/util/regex
-# include $(BUILD_STATIC_LIBRARY)
+include $(CLEAR_VARS)
+LOCAL_SRC_FILES := ../clearsilver/util/regex/regex.c
+LOCAL_MODULE := libclearsilverregex
+LOCAL_C_INCLUDES := \
+	external/clearsilver \
+ 	external/clearsilver/util/regex
+include $(BUILD_STATIC_LIBRARY)
 
 
 SUBMAKE := make -s -C $(LOCAL_PATH) CC=$(CC) 
@@ -55,7 +55,7 @@ LOCAL_CFLAGS := $(BUSYBOX_CFLAGS)
 LOCAL_MODULE := busybox
 LOCAL_MODULE_TAGS := eng
 LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
-# LOCAL_STATIC_LIBRARIES += libclearsilverregex
+LOCAL_STATIC_LIBRARIES += libclearsilverregex
 include $(BUILD_EXECUTABLE)
 
 BUSYBOX_LINKS := $(shell cat $(LOCAL_PATH)/busybox-$(BUSYBOX_CONFIG).links)
@@ -94,6 +94,6 @@ LOCAL_CFLAGS += \
   -Dgenerate_uuid=busybox_generate_uuid
 LOCAL_MODULE := libbusybox
 LOCAL_MODULE_TAGS := eng
-# LOCAL_STATIC_LIBRARIES += libclearsilverregex libcutils libc libm
-LOCAL_STATIC_LIBRARIES += libcutils libc libm
+LOCAL_STATIC_LIBRARIES += libclearsilverregex libcutils libc libm
+#LOCAL_STATIC_LIBRARIES += libcutils libc libm
 include $(BUILD_STATIC_LIBRARY)
