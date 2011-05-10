@@ -33,7 +33,7 @@ static const char bbconfig_config[] ALIGN1 =
 "CONFIG_UNICODE_WIDE_WCHARS=y\n"
 "# CONFIG_UNICODE_BIDI_SUPPORT is not set\n"
 "# CONFIG_UNICODE_NEUTRAL_TABLE is not set\n"
-"# CONFIG_UNICODE_PRESERVE_BROKEN is not set\n"
+"CONFIG_UNICODE_PRESERVE_BROKEN=y\n"
 "CONFIG_LONG_OPTS=y\n"
 "# CONFIG_FEATURE_DEVPTS is not set\n"
 "# CONFIG_FEATURE_CLEAN_UP is not set\n"
