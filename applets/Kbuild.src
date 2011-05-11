@@ -5,7 +5,7 @@
 # Licensed under GPLv2, see file LICENSE in this source tree.
 
 obj-y :=
-obj-y += applets.o
+# obj-y += applets.o
 
 hostprogs-y:=
 hostprogs-y += usage usage_pod applet_tables

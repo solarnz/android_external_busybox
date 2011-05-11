@@ -1,3 +1,7 @@
+# after .config setup, type "make prepare" to generate /include files
+
+cp ../.config ../.config-minimal
+
 cp ../include/applets.h ./
 cp ../include/applet_tables.h ./
 cp ../include/autoconf.h ./

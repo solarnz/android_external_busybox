@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-froyo
  */
-#define AUTOCONF_TIMESTAMP "2011-05-08 14:38:05 CEST"
+#define AUTOCONF_TIMESTAMP "2011-05-11 00:50:32 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -1632,18 +1632,18 @@
 /*
  * Linux Ext2 FS Progs
  */
-#undef CONFIG_CHATTR
-#define ENABLE_CHATTR 0
-#define IF_CHATTR(...)
-#define IF_NOT_CHATTR(...) __VA_ARGS__
+#define CONFIG_CHATTR 1
+#define ENABLE_CHATTR 1
+#define IF_CHATTR(...) __VA_ARGS__
+#define IF_NOT_CHATTR(...)
 #undef CONFIG_FSCK
 #define ENABLE_FSCK 0
 #define IF_FSCK(...)
 #define IF_NOT_FSCK(...) __VA_ARGS__
-#undef CONFIG_LSATTR
-#define ENABLE_LSATTR 0
-#define IF_LSATTR(...)
-#define IF_NOT_LSATTR(...) __VA_ARGS__
+#define CONFIG_LSATTR 1
+#define ENABLE_LSATTR 1
+#define IF_LSATTR(...) __VA_ARGS__
+#define IF_NOT_LSATTR(...)
 #undef CONFIG_TUNE2FS
 #define ENABLE_TUNE2FS 0
 #define IF_TUNE2FS(...)

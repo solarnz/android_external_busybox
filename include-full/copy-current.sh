@@ -1,4 +1,4 @@
-# after .config setup, type make to generate /include files
+# after .config setup, type "make prepare" to generate /include files
 
 cp ../.config ../.config-full
 
