@@ -80,8 +80,8 @@ ALL_MODULES.$(LOCAL_MODULE).INSTALLED := \
 
 # Build a static busybox for the recovery image
 include $(CLEAR_VARS)
-BUSYBOX_CONFIG:=minimal
-BUSYBOX_SUFFIX:=minimal
+BUSYBOX_CONFIG:=full
+BUSYBOX_SUFFIX:=static
 LOCAL_SRC_FILES := $(BUSYBOX_SRC_FILES)
 LOCAL_C_INCLUDES := $(BUSYBOX_C_INCLUDES)
 LOCAL_CFLAGS := -Dmain=busybox_driver $(BUSYBOX_CFLAGS)
@@ -96,7 +96,6 @@ LOCAL_CFLAGS += \
 LOCAL_MODULE := libbusybox
 LOCAL_MODULE_TAGS := eng
 LOCAL_STATIC_LIBRARIES += libclearsilverregex libcutils libc libm
-#LOCAL_STATIC_LIBRARIES += libcutils libc libm
 include $(BUILD_STATIC_LIBRARY)
 
 
