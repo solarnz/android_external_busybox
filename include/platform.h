@@ -266,6 +266,7 @@ typedef unsigned smalluint;
 #if defined __GLIBC__ \
  || defined __UCLIBC__ \
  || defined __dietlibc__ \
+ || defined __BIONIC__ \
  || defined _NEWLIB_VERSION
 # include <features.h>
 #endif
