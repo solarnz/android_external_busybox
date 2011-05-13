@@ -35,6 +35,7 @@ BUSYBOX_C_INCLUDES = \
 	external/clearsilver \
 	external/clearsilver/util/regex \
 	bionic/libc/private \
+	bionic/libm/include \
 	libc/kernel/common
 
 BUSYBOX_CFLAGS = \
@@ -98,12 +99,15 @@ LOCAL_STATIC_LIBRARIES += libclearsilverregex libcutils libc libm
 #LOCAL_STATIC_LIBRARIES += libcutils libc libm
 include $(BUILD_STATIC_LIBRARY)
 
+
 # Build a static busybox for bootmenu
+
 include $(CLEAR_VARS)
 BUSYBOX_CONFIG:=full
 BUSYBOX_SUFFIX:=static
 LOCAL_SRC_FILES := $(BUSYBOX_SRC_FILES)
-LOCAL_C_INCLUDES := $(BUSYBOX_C_INCLUDES)
+LOCAL_C_INCLUDES := $(BUSYBOX_C_INCLUDES) \
+	bionic/libm
 LOCAL_CFLAGS := $(BUSYBOX_CFLAGS)
 LOCAL_CFLAGS += \
   -Dgetusershell=busybox_getusershell \
@@ -114,10 +118,9 @@ LOCAL_CFLAGS += \
   -Dgetmntent_r=busybox_getmntent_r \
   -Dgenerate_uuid=busybox_generate_uuid
 LOCAL_FORCE_STATIC_EXECUTABLE := true
-LOCAL_MODULE := utility_busybox
+LOCAL_MODULE := bootmenu_busybox
 LOCAL_MODULE_TAGS := eng
 LOCAL_STATIC_LIBRARIES += libclearsilverregex libcutils libc libm
-# LOCAL_STATIC_LIBRARIES += libcutils libc libm
 LOCAL_MODULE_CLASS := UTILITY_EXECUTABLES
 LOCAL_MODULE_PATH := $(PRODUCT_OUT)/system/bootmenu/binary
 LOCAL_UNSTRIPPED_PATH := $(PRODUCT_OUT)/symbols/utilities

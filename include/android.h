@@ -11,6 +11,10 @@
 /* for dirname, basename */
 #include <libgen.h>
 
+#if ENABLE_FEATURE_DC_LIBM
+# include <math.h>
+#endif
+
 #undef HAVE_STPCPY
 
 #define killpg_busybox(P, S) kill(-(P), S)
