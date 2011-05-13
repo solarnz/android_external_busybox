@@ -1,8 +1,8 @@
 /*
  * Automatically generated C config: don't edit
- * Busybox version: 1.19.0-froyo
+ * Busybox version: 1.19.0-cm71
  */
-#define AUTOCONF_TIMESTAMP "2011-05-11 03:06:59 CEST"
+#define AUTOCONF_TIMESTAMP "2011-05-13 15:06:37 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -88,7 +88,7 @@
 #define ENABLE_SUBST_WCHAR 1
 #define IF_SUBST_WCHAR(...) __VA_ARGS__
 #define IF_NOT_SUBST_WCHAR(...)
-#define CONFIG_LAST_SUPPORTED_WCHAR 12799
+#define CONFIG_LAST_SUPPORTED_WCHAR 0
 #define ENABLE_LAST_SUPPORTED_WCHAR 1
 #define IF_LAST_SUPPORTED_WCHAR(...) __VA_ARGS__
 #define IF_NOT_LAST_SUPPORTED_WCHAR(...)
