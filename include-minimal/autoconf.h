@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-cm71
  */
-#define AUTOCONF_TIMESTAMP "2011-05-13 15:06:37 CEST"
+#define AUTOCONF_TIMESTAMP ""
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -2268,10 +2268,10 @@
 #define ENABLE_DC 1
 #define IF_DC(...) __VA_ARGS__
 #define IF_NOT_DC(...)
-#define CONFIG_FEATURE_DC_LIBM 1
-#define ENABLE_FEATURE_DC_LIBM 1
-#define IF_FEATURE_DC_LIBM(...) __VA_ARGS__
-#define IF_NOT_FEATURE_DC_LIBM(...)
+#undef CONFIG_FEATURE_DC_LIBM
+#define ENABLE_FEATURE_DC_LIBM 0
+#define IF_FEATURE_DC_LIBM(...)
+#define IF_NOT_FEATURE_DC_LIBM(...) __VA_ARGS__
 #undef CONFIG_DEVFSD
 #define ENABLE_DEVFSD 0
 #define IF_DEVFSD(...)

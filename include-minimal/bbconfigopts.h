@@ -549,7 +549,7 @@ static const char bbconfig_config[] ALIGN1 =
 "CONFIG_FEATURE_CROND_DIR=\"\"\n"
 "# CONFIG_CRONTAB is not set\n"
 "CONFIG_DC=y\n"
-"CONFIG_FEATURE_DC_LIBM=y\n"
+"# CONFIG_FEATURE_DC_LIBM is not set\n"
 "# CONFIG_DEVFSD is not set\n"
 "# CONFIG_DEVFSD_MODLOAD is not set\n"
 "# CONFIG_DEVFSD_FG_NP is not set\n"

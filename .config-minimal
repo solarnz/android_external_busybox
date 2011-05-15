@@ -1,7 +1,6 @@
 #
 # Automatically generated make config: don't edit
 # Busybox version: 1.19.0-cm71
-# Fri May 13 15:06:37 2011
 #
 CONFIG_HAVE_DOT_CONFIG=y
 
@@ -647,7 +646,7 @@ CONFIG_FEATURE_BEEP_LENGTH_MS=0
 CONFIG_FEATURE_CROND_DIR=""
 # CONFIG_CRONTAB is not set
 CONFIG_DC=y
-CONFIG_FEATURE_DC_LIBM=y
+# CONFIG_FEATURE_DC_LIBM is not set
 # CONFIG_DEVFSD is not set
 # CONFIG_DEVFSD_MODLOAD is not set
 # CONFIG_DEVFSD_FG_NP is not set
