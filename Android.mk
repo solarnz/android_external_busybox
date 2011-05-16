@@ -36,6 +36,7 @@ BUSYBOX_C_INCLUDES = \
 	external/clearsilver/util/regex \
 	bionic/libc/private \
 	bionic/libm/include \
+	bionic/libm \
 	libc/kernel/common
 
 BUSYBOX_CFLAGS = \
@@ -80,7 +81,7 @@ ALL_MODULES.$(LOCAL_MODULE).INSTALLED := \
 
 # Build a static busybox for the recovery image
 include $(CLEAR_VARS)
-BUSYBOX_CONFIG:=full
+BUSYBOX_CONFIG:=minimal
 BUSYBOX_SUFFIX:=static
 LOCAL_SRC_FILES := $(BUSYBOX_SRC_FILES)
 LOCAL_C_INCLUDES := $(BUSYBOX_C_INCLUDES)
@@ -105,8 +106,7 @@ include $(CLEAR_VARS)
 BUSYBOX_CONFIG:=full
 BUSYBOX_SUFFIX:=static
 LOCAL_SRC_FILES := $(BUSYBOX_SRC_FILES)
-LOCAL_C_INCLUDES := $(BUSYBOX_C_INCLUDES) \
-	bionic/libm
+LOCAL_C_INCLUDES := $(BUSYBOX_C_INCLUDES)
 LOCAL_CFLAGS := $(BUSYBOX_CFLAGS)
 LOCAL_CFLAGS += \
   -Dgetusershell=busybox_getusershell \
