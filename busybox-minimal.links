@@ -91,6 +91,7 @@
 /bin/printenv
 /bin/printf
 /bin/ps
+/bin/pstree
 /bin/pwd
 /sbin/rdev
 /bin/readlink

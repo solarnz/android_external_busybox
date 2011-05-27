@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-cm71
  */
-#define AUTOCONF_TIMESTAMP "2011-05-26 14:10:59 CEST"
+#define AUTOCONF_TIMESTAMP "2011-05-28 01:24:24 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -3116,10 +3116,10 @@
 #define ENABLE_POWERTOP 0
 #define IF_POWERTOP(...)
 #define IF_NOT_POWERTOP(...) __VA_ARGS__
-#undef CONFIG_PSTREE
-#define ENABLE_PSTREE 0
-#define IF_PSTREE(...)
-#define IF_NOT_PSTREE(...) __VA_ARGS__
+#define CONFIG_PSTREE 1
+#define ENABLE_PSTREE 1
+#define IF_PSTREE(...) __VA_ARGS__
+#define IF_NOT_PSTREE(...)
 #undef CONFIG_PWDX
 #define ENABLE_PWDX 0
 #define IF_PWDX(...)
@@ -3396,10 +3396,10 @@
 #define ENABLE_ASH_OPTIMIZE_FOR_SIZE 1
 #define IF_ASH_OPTIMIZE_FOR_SIZE(...) __VA_ARGS__
 #define IF_NOT_ASH_OPTIMIZE_FOR_SIZE(...)
-#define CONFIG_ASH_RANDOM_SUPPORT 1
-#define ENABLE_ASH_RANDOM_SUPPORT 1
-#define IF_ASH_RANDOM_SUPPORT(...) __VA_ARGS__
-#define IF_NOT_ASH_RANDOM_SUPPORT(...)
+#undef CONFIG_ASH_RANDOM_SUPPORT
+#define ENABLE_ASH_RANDOM_SUPPORT 0
+#define IF_ASH_RANDOM_SUPPORT(...)
+#define IF_NOT_ASH_RANDOM_SUPPORT(...) __VA_ARGS__
 #define CONFIG_ASH_EXPAND_PRMT 1
 #define ENABLE_ASH_EXPAND_PRMT 1
 #define IF_ASH_EXPAND_PRMT(...) __VA_ARGS__

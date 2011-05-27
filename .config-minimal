@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Busybox version: 1.19.0-cm71
-# Thu May 26 14:10:59 2011
+# Sat May 28 01:24:24 2011
 #
 CONFIG_HAVE_DOT_CONFIG=y
 
@@ -871,7 +871,7 @@ CONFIG_FEATURE_MIME_CHARSET=""
 # CONFIG_NMETER is not set
 # CONFIG_PMAP is not set
 # CONFIG_POWERTOP is not set
-# CONFIG_PSTREE is not set
+CONFIG_PSTREE=y
 # CONFIG_PWDX is not set
 # CONFIG_SMEMCAP is not set
 CONFIG_FREE=y
@@ -947,7 +947,7 @@ CONFIG_ASH_BUILTIN_TEST=y
 CONFIG_ASH_CMDCMD=y
 # CONFIG_ASH_MAIL is not set
 CONFIG_ASH_OPTIMIZE_FOR_SIZE=y
-CONFIG_ASH_RANDOM_SUPPORT=y
+# CONFIG_ASH_RANDOM_SUPPORT is not set
 CONFIG_ASH_EXPAND_PRMT=y
 # CONFIG_CTTYHACK is not set
 # CONFIG_HUSH is not set
