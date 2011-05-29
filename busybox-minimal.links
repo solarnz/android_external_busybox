@@ -115,7 +115,6 @@
 /bin/sort
 /bin/split
 /bin/stat
-/bin/strings
 /bin/stty
 /sbin/swapoff
 /sbin/swapon
