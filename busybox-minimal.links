@@ -19,6 +19,8 @@
 /bin/cmp
 /bin/cp
 /bin/cpio
+/sbin/nanddump
+/sbin/nandwrite
 /bin/cut
 /bin/date
 /bin/dc
