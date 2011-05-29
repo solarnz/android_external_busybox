@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-froyo
  */
-#define AUTOCONF_TIMESTAMP "2011-05-29 17:44:02 CEST"
+#define AUTOCONF_TIMESTAMP "2011-05-29 19:19:39 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -2148,14 +2148,14 @@
 #define ENABLE_CONSPY 0
 #define IF_CONSPY(...)
 #define IF_NOT_CONSPY(...) __VA_ARGS__
-#undef CONFIG_NANDWRITE
-#define ENABLE_NANDWRITE 0
-#define IF_NANDWRITE(...)
-#define IF_NOT_NANDWRITE(...) __VA_ARGS__
-#undef CONFIG_NANDDUMP
-#define ENABLE_NANDDUMP 0
-#define IF_NANDDUMP(...)
-#define IF_NOT_NANDDUMP(...) __VA_ARGS__
+#define CONFIG_NANDWRITE 1
+#define ENABLE_NANDWRITE 1
+#define IF_NANDWRITE(...) __VA_ARGS__
+#define IF_NOT_NANDWRITE(...)
+#define CONFIG_NANDDUMP 1
+#define ENABLE_NANDDUMP 1
+#define IF_NANDDUMP(...) __VA_ARGS__
+#define IF_NOT_NANDDUMP(...)
 #define CONFIG_SETSERIAL 1
 #define ENABLE_SETSERIAL 1
 #define IF_SETSERIAL(...) __VA_ARGS__

@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Busybox version: 1.19.0-froyo
-# Thu May 26 14:24:32 2011
+# Sun May 29 19:18:55 2011
 #
 CONFIG_HAVE_DOT_CONFIG=y
 
@@ -617,8 +617,8 @@ CONFIG_FEATURE_VOLUMEID_ISO9660=y
 # Miscellaneous Utilities
 #
 # CONFIG_CONSPY is not set
-# CONFIG_NANDWRITE is not set
-# CONFIG_NANDDUMP is not set
+CONFIG_NANDWRITE=y
+CONFIG_NANDDUMP=y
 CONFIG_SETSERIAL=y
 # CONFIG_UBIATTACH is not set
 # CONFIG_UBIDETACH is not set
@@ -641,11 +641,11 @@ CONFIG_FEATURE_BEEP_LENGTH_MS=0
 # CONFIG_FEATURE_CHAT_VAR_ABORT_LEN is not set
 # CONFIG_FEATURE_CHAT_CLR_ABORT is not set
 # CONFIG_CHRT is not set
-# CONFIG_CROND is not set
+CONFIG_CROND=y
 # CONFIG_FEATURE_CROND_D is not set
 # CONFIG_FEATURE_CROND_CALL_SENDMAIL is not set
-CONFIG_FEATURE_CROND_DIR=""
-# CONFIG_CRONTAB is not set
+CONFIG_FEATURE_CROND_DIR="/system/etc/cron.d"
+CONFIG_CRONTAB=y
 CONFIG_DC=y
 CONFIG_FEATURE_DC_LIBM=y
 # CONFIG_DEVFSD is not set

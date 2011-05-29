@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Busybox version: 1.19.0-froyo
-# Sun May 29 17:44:02 2011
+# Sun May 29 19:19:39 2011
 #
 CONFIG_HAVE_DOT_CONFIG=y
 
@@ -617,8 +617,8 @@ CONFIG_FEATURE_VOLUMEID_EXT=y
 # Miscellaneous Utilities
 #
 # CONFIG_CONSPY is not set
-# CONFIG_NANDWRITE is not set
-# CONFIG_NANDDUMP is not set
+CONFIG_NANDWRITE=y
+CONFIG_NANDDUMP=y
 CONFIG_SETSERIAL=y
 # CONFIG_UBIATTACH is not set
 # CONFIG_UBIDETACH is not set

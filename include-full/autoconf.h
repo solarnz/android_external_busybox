@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-froyo
  */
-#define AUTOCONF_TIMESTAMP "2011-05-26 14:24:32 CEST"
+#define AUTOCONF_TIMESTAMP "2011-05-29 19:18:55 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -2148,14 +2148,14 @@
 #define ENABLE_CONSPY 0
 #define IF_CONSPY(...)
 #define IF_NOT_CONSPY(...) __VA_ARGS__
-#undef CONFIG_NANDWRITE
-#define ENABLE_NANDWRITE 0
-#define IF_NANDWRITE(...)
-#define IF_NOT_NANDWRITE(...) __VA_ARGS__
-#undef CONFIG_NANDDUMP
-#define ENABLE_NANDDUMP 0
-#define IF_NANDDUMP(...)
-#define IF_NOT_NANDDUMP(...) __VA_ARGS__
+#define CONFIG_NANDWRITE 1
+#define ENABLE_NANDWRITE 1
+#define IF_NANDWRITE(...) __VA_ARGS__
+#define IF_NOT_NANDWRITE(...)
+#define CONFIG_NANDDUMP 1
+#define ENABLE_NANDDUMP 1
+#define IF_NANDDUMP(...) __VA_ARGS__
+#define IF_NOT_NANDDUMP(...)
 #define CONFIG_SETSERIAL 1
 #define ENABLE_SETSERIAL 1
 #define IF_SETSERIAL(...) __VA_ARGS__
@@ -2244,10 +2244,10 @@
 #define ENABLE_CHRT 0
 #define IF_CHRT(...)
 #define IF_NOT_CHRT(...) __VA_ARGS__
-#undef CONFIG_CROND
-#define ENABLE_CROND 0
-#define IF_CROND(...)
-#define IF_NOT_CROND(...) __VA_ARGS__
+#define CONFIG_CROND 1
+#define ENABLE_CROND 1
+#define IF_CROND(...) __VA_ARGS__
+#define IF_NOT_CROND(...)
 #undef CONFIG_FEATURE_CROND_D
 #define ENABLE_FEATURE_CROND_D 0
 #define IF_FEATURE_CROND_D(...)
@@ -2256,14 +2256,14 @@
 #define ENABLE_FEATURE_CROND_CALL_SENDMAIL 0
 #define IF_FEATURE_CROND_CALL_SENDMAIL(...)
 #define IF_NOT_FEATURE_CROND_CALL_SENDMAIL(...) __VA_ARGS__
-#define CONFIG_FEATURE_CROND_DIR ""
+#define CONFIG_FEATURE_CROND_DIR "/system/etc/cron.d"
 #define ENABLE_FEATURE_CROND_DIR 1
 #define IF_FEATURE_CROND_DIR(...) __VA_ARGS__
 #define IF_NOT_FEATURE_CROND_DIR(...)
-#undef CONFIG_CRONTAB
-#define ENABLE_CRONTAB 0
-#define IF_CRONTAB(...)
-#define IF_NOT_CRONTAB(...) __VA_ARGS__
+#define CONFIG_CRONTAB 1
+#define ENABLE_CRONTAB 1
+#define IF_CRONTAB(...) __VA_ARGS__
+#define IF_NOT_CRONTAB(...)
 #define CONFIG_DC 1
 #define ENABLE_DC 1
 #define IF_DC(...) __VA_ARGS__
