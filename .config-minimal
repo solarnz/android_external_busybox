@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Busybox version: 1.19.0-cm71
-# Sun May 29 17:46:07 2011
+# Sun May 29 19:23:02 2011
 #
 CONFIG_HAVE_DOT_CONFIG=y
 
@@ -617,8 +617,8 @@ CONFIG_FEATURE_VOLUMEID_EXT=y
 # Miscellaneous Utilities
 #
 # CONFIG_CONSPY is not set
-# CONFIG_NANDWRITE is not set
-# CONFIG_NANDDUMP is not set
+CONFIG_NANDWRITE=y
+CONFIG_NANDDUMP=y
 CONFIG_SETSERIAL=y
 # CONFIG_UBIATTACH is not set
 # CONFIG_UBIDETACH is not set
@@ -695,7 +695,7 @@ CONFIG_MOUNTPOINT=y
 # CONFIG_RUNLEVEL is not set
 # CONFIG_RX is not set
 CONFIG_SETSID=y
-CONFIG_STRINGS=y
+# CONFIG_STRINGS is not set
 # CONFIG_TASKSET is not set
 # CONFIG_FEATURE_TASKSET_FANCY is not set
 CONFIG_TIME=y
