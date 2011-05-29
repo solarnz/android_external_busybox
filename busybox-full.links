@@ -24,6 +24,8 @@
 /bin/comm
 /bin/cp
 /bin/cpio
+/sbin/crond
+/bin/crontab
 /bin/cut
 /bin/date
 /bin/dc
@@ -94,6 +96,8 @@
 /bin/mountpoint
 /bin/mpstat
 /bin/mv
+/sbin/nanddump
+/sbin/nandwrite
 /bin/nc
 /bin/netstat
 /bin/nice
