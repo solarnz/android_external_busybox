@@ -69,6 +69,7 @@
 /bin/lzcat
 /bin/lzop
 /bin/lzopcat
+/sbin/makedevs
 /bin/md5sum
 /bin/mkdir
 /sbin/mke2fs
