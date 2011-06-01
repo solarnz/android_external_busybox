@@ -523,10 +523,6 @@ static NOINLINE unsigned display_single(const struct dnode *dn)
 	if (G.all_fmt & LIST_INO)
 		column += printf("%7llu ", (long long) dn->dn_ino);
 //TODO: -h should affect -s too:
-
-// HEAD android
-//	if (all_fmt & LIST_BLOCKS)
-//		column += printf("%6"FILESIZE_FMT"u ", (filesize_t) (dn->dstat.st_blocks >> 1));
 	if (G.all_fmt & LIST_BLOCKS)
 		column += printf("%6"OFF_FMT"u ", (off_t) (dn->dn_blocks >> 1));
 	if (G.all_fmt & LIST_MODEBITS)
@@ -543,13 +539,28 @@ static NOINLINE unsigned display_single(const struct dnode *dn)
 	}
 #if ENABLE_FEATURE_LS_USERNAME
 	else if (G.all_fmt & LIST_ID_NAME) {
-		if (option_mask32 & OPT_g) {
-			column += printf("%-8.8s ",
-				get_cached_groupname(dn->dn_gid));
+		//extend user/group names to 12 char. 
+		//if terminal has more than 88 cols (or -w 88 is set)
+		if (G_terminal_width >= 88) {
+			#define UGLONG_FMT "%-12.12s "
+			if (option_mask32 & OPT_g) {
+				column += printf(UGLONG_FMT,
+					get_cached_groupname(dn->dn_gid));
+			} else {
+				column += printf(UGLONG_FMT UGLONG_FMT,
+					get_cached_username(dn->dn_uid),
+					get_cached_groupname(dn->dn_gid));
+			}
 		} else {
-			column += printf("%-8.8s %-8.8s ",
-				get_cached_username(dn->dn_uid),
-				get_cached_groupname(dn->dn_gid));
+			#define UGDEF_FMT "%-8.8s "
+			if (option_mask32 & OPT_g) {
+				column += printf(UGDEF_FMT,
+					get_cached_groupname(dn->dn_gid));
+			} else {
+				column += printf(UGDEF_FMT UGDEF_FMT,
+					get_cached_username(dn->dn_uid),
+					get_cached_groupname(dn->dn_gid));
+			}
 		}
 	}
 #endif
@@ -565,8 +576,6 @@ static NOINLINE unsigned display_single(const struct dnode *dn)
 					make_human_readable_str(dn->dn_size, 1, 0)
 				);
 			} else {
-// HEAD android
-//				column += printf("%9"FILESIZE_FMT"u ", (filesize_t) dn->dstat.st_size);
 				column += printf("%9"OFF_FMT"u ", dn->dn_size);
 			}
 		}
