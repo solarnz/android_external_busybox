@@ -56,7 +56,7 @@ static void gotsig(int sig UNUSED_PARAM)
 int more_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
 int more_main(int argc UNUSED_PARAM, char **argv)
 {
-	int c = c; /* for compiler */
+	int c = EOF; /* for compiler */
 	int lines;
 	int input = 0;
 	int spaces = 0;
