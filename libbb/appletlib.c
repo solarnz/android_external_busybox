@@ -34,22 +34,6 @@
 # include <malloc.h> /* for mallopt */
 #endif
 
-/* Try to pull in PAGE_SIZE */
-#ifdef __linux__
-#ifdef __BIONIC__
-# include <asm/page.h>
-#else
-# include <sys/user.h>
-#endif
-#endif
-#ifdef __GNU__ /* Hurd */
-# include <mach/vm_param.h>
-#endif
-#ifndef PAGE_SIZE
-# define PAGE_SIZE (4*1024) /* guess */
-#endif
-
-
 /* Declare <applet>_main() */
 #define PROTOTYPES
 #include "applets.h"
@@ -792,13 +776,13 @@ int main(int argc UNUSED_PARAM, char **argv)
 	 * to keep before releasing to the OS
 	 * Default is way too big: 256k
 	 */
-	mallopt(M_TRIM_THRESHOLD, 2 * PAGE_SIZE);
+	mallopt(M_TRIM_THRESHOLD, 8 * 1024);
 #endif
 #ifdef M_MMAP_THRESHOLD
 	/* M_MMAP_THRESHOLD is the request size threshold for using mmap()
 	 * Default is too big: 256k
 	 */
-	mallopt(M_MMAP_THRESHOLD, 8 * PAGE_SIZE - 256);
+	mallopt(M_MMAP_THRESHOLD, 32 * 1024 - 256);
 #endif
 
 #if !BB_MMU
