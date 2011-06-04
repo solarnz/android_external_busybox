@@ -371,12 +371,6 @@ typedef unsigned smalluint;
 # undef HAVE_VASPRINTF
 #endif
 
-#if defined(__BIONIC__)
-# undef HAVE_STRCHRNUL
-# undef HAVE_FDPRINTF
-# undef HAVE_DPRINTF
-#endif
-
 #if defined(__FreeBSD__)
 # undef HAVE_STRCHRNUL
 #endif
@@ -402,6 +396,10 @@ typedef unsigned smalluint;
 # undef HAVE_DPRINTF
 # undef HAVE_STPCPY
 # undef HAVE_STRCHRNUL
+#endif
+
+#if defined(__BIONIC__)
+# undef HAVE_FDPRINTF
 #endif
 
 /*
