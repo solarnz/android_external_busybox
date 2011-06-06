@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-cm71
  */
-#define AUTOCONF_TIMESTAMP "2011-06-05 01:34:39 CEST"
+#define AUTOCONF_TIMESTAMP "2011-06-06 20:32:59 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -1152,10 +1152,10 @@
 #define ENABLE_MKTEMP 1
 #define IF_MKTEMP(...) __VA_ARGS__
 #define IF_NOT_MKTEMP(...)
-#undef CONFIG_PIPE_PROGRESS
-#define ENABLE_PIPE_PROGRESS 0
-#define IF_PIPE_PROGRESS(...)
-#define IF_NOT_PIPE_PROGRESS(...) __VA_ARGS__
+#define CONFIG_PIPE_PROGRESS 1
+#define ENABLE_PIPE_PROGRESS 1
+#define IF_PIPE_PROGRESS(...) __VA_ARGS__
+#define IF_NOT_PIPE_PROGRESS(...)
 #define CONFIG_RUN_PARTS 1
 #define ENABLE_RUN_PARTS 1
 #define IF_RUN_PARTS(...) __VA_ARGS__
@@ -1376,10 +1376,10 @@
 #define ENABLE_FEATURE_FIND_CONTEXT 0
 #define IF_FEATURE_FIND_CONTEXT(...)
 #define IF_NOT_FEATURE_FIND_CONTEXT(...) __VA_ARGS__
-#undef CONFIG_FEATURE_FIND_LINKS
-#define ENABLE_FEATURE_FIND_LINKS 0
-#define IF_FEATURE_FIND_LINKS(...)
-#define IF_NOT_FEATURE_FIND_LINKS(...) __VA_ARGS__
+#define CONFIG_FEATURE_FIND_LINKS 1
+#define ENABLE_FEATURE_FIND_LINKS 1
+#define IF_FEATURE_FIND_LINKS(...) __VA_ARGS__
+#define IF_NOT_FEATURE_FIND_LINKS(...)
 #define CONFIG_GREP 1
 #define ENABLE_GREP 1
 #define IF_GREP(...) __VA_ARGS__
@@ -1432,10 +1432,10 @@
 #define ENABLE_FEATURE_BOOTCHARTD_CONFIG_FILE 0
 #define IF_FEATURE_BOOTCHARTD_CONFIG_FILE(...)
 #define IF_NOT_FEATURE_BOOTCHARTD_CONFIG_FILE(...) __VA_ARGS__
-#undef CONFIG_HALT
-#define ENABLE_HALT 0
-#define IF_HALT(...)
-#define IF_NOT_HALT(...) __VA_ARGS__
+#define CONFIG_HALT 1
+#define ENABLE_HALT 1
+#define IF_HALT(...) __VA_ARGS__
+#define IF_NOT_HALT(...)
 #undef CONFIG_FEATURE_CALL_TELINIT
 #define ENABLE_FEATURE_CALL_TELINIT 0
 #define IF_FEATURE_CALL_TELINIT(...)
@@ -1644,10 +1644,10 @@
 #define ENABLE_LSATTR 1
 #define IF_LSATTR(...) __VA_ARGS__
 #define IF_NOT_LSATTR(...)
-#undef CONFIG_TUNE2FS
-#define ENABLE_TUNE2FS 0
-#define IF_TUNE2FS(...)
-#define IF_NOT_TUNE2FS(...) __VA_ARGS__
+#define CONFIG_TUNE2FS 1
+#define ENABLE_TUNE2FS 1
+#define IF_TUNE2FS(...) __VA_ARGS__
+#define IF_NOT_TUNE2FS(...)
 
 /*
  * Linux Module Utilities
@@ -1868,10 +1868,10 @@
 #define ENABLE_MKFS_REISER 0
 #define IF_MKFS_REISER(...)
 #define IF_NOT_MKFS_REISER(...) __VA_ARGS__
-#undef CONFIG_MKFS_VFAT
-#define ENABLE_MKFS_VFAT 0
-#define IF_MKFS_VFAT(...)
-#define IF_NOT_MKFS_VFAT(...) __VA_ARGS__
+#define CONFIG_MKFS_VFAT 1
+#define ENABLE_MKFS_VFAT 1
+#define IF_MKFS_VFAT(...) __VA_ARGS__
+#define IF_NOT_MKFS_VFAT(...)
 #define CONFIG_GETOPT 1
 #define ENABLE_GETOPT 1
 #define IF_GETOPT(...) __VA_ARGS__
@@ -2044,10 +2044,10 @@
 #define ENABLE_UMOUNT 1
 #define IF_UMOUNT(...) __VA_ARGS__
 #define IF_NOT_UMOUNT(...)
-#undef CONFIG_FEATURE_UMOUNT_ALL
-#define ENABLE_FEATURE_UMOUNT_ALL 0
-#define IF_FEATURE_UMOUNT_ALL(...)
-#define IF_NOT_FEATURE_UMOUNT_ALL(...) __VA_ARGS__
+#define CONFIG_FEATURE_UMOUNT_ALL 1
+#define ENABLE_FEATURE_UMOUNT_ALL 1
+#define IF_FEATURE_UMOUNT_ALL(...) __VA_ARGS__
+#define IF_NOT_FEATURE_UMOUNT_ALL(...)
 
 /*
  * Common options for mount/umount
