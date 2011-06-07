@@ -348,7 +348,7 @@ static const char bbconfig_config[] ALIGN1 =
 "# CONFIG_BOOTCHARTD is not set\n"
 "# CONFIG_FEATURE_BOOTCHARTD_BLOATED_HEADER is not set\n"
 "# CONFIG_FEATURE_BOOTCHARTD_CONFIG_FILE is not set\n"
-"CONFIG_HALT=y\n"
+"# CONFIG_HALT is not set\n"
 "# CONFIG_FEATURE_CALL_TELINIT is not set\n"
 "CONFIG_TELINIT_PATH=\"\"\n"
 "# CONFIG_INIT is not set\n"

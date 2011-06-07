@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-cm71
  */
-#define AUTOCONF_TIMESTAMP "2011-06-06 20:32:59 CEST"
+#define AUTOCONF_TIMESTAMP "2011-06-07 05:28:50 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -1432,10 +1432,10 @@
 #define ENABLE_FEATURE_BOOTCHARTD_CONFIG_FILE 0
 #define IF_FEATURE_BOOTCHARTD_CONFIG_FILE(...)
 #define IF_NOT_FEATURE_BOOTCHARTD_CONFIG_FILE(...) __VA_ARGS__
-#define CONFIG_HALT 1
-#define ENABLE_HALT 1
-#define IF_HALT(...) __VA_ARGS__
-#define IF_NOT_HALT(...)
+#undef CONFIG_HALT
+#define ENABLE_HALT 0
+#define IF_HALT(...)
+#define IF_NOT_HALT(...) __VA_ARGS__
 #undef CONFIG_FEATURE_CALL_TELINIT
 #define ENABLE_FEATURE_CALL_TELINIT 0
 #define IF_FEATURE_CALL_TELINIT(...)

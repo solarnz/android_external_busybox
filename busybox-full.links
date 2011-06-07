@@ -86,6 +86,7 @@
 /sbin/mke2fs
 /bin/mkfifo
 /sbin/mkfs.ext2
+/sbin/mkfs.vfat
 /bin/mknod
 /sbin/mkswap
 /bin/mktemp
@@ -168,6 +169,7 @@
 /bin/traceroute
 /bin/true
 /bin/tty
+/sbin/tune2fs
 /bin/umount
 /bin/uname
 /bin/uncompress
