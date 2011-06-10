@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-cm71
  */
-#define AUTOCONF_TIMESTAMP "2011-05-31 02:00:48 CEST"
+#define AUTOCONF_TIMESTAMP "2011-06-10 22:55:33 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -1632,22 +1632,22 @@
 /*
  * Linux Ext2 FS Progs
  */
-#undef CONFIG_CHATTR
-#define ENABLE_CHATTR 0
-#define IF_CHATTR(...)
-#define IF_NOT_CHATTR(...) __VA_ARGS__
+#define CONFIG_CHATTR 1
+#define ENABLE_CHATTR 1
+#define IF_CHATTR(...) __VA_ARGS__
+#define IF_NOT_CHATTR(...)
 #undef CONFIG_FSCK
 #define ENABLE_FSCK 0
 #define IF_FSCK(...)
 #define IF_NOT_FSCK(...) __VA_ARGS__
-#undef CONFIG_LSATTR
-#define ENABLE_LSATTR 0
-#define IF_LSATTR(...)
-#define IF_NOT_LSATTR(...) __VA_ARGS__
-#undef CONFIG_TUNE2FS
-#define ENABLE_TUNE2FS 0
-#define IF_TUNE2FS(...)
-#define IF_NOT_TUNE2FS(...) __VA_ARGS__
+#define CONFIG_LSATTR 1
+#define ENABLE_LSATTR 1
+#define IF_LSATTR(...) __VA_ARGS__
+#define IF_NOT_LSATTR(...)
+#define CONFIG_TUNE2FS 1
+#define ENABLE_TUNE2FS 1
+#define IF_TUNE2FS(...) __VA_ARGS__
+#define IF_NOT_TUNE2FS(...)
 
 /*
  * Linux Module Utilities
@@ -1868,10 +1868,10 @@
 #define ENABLE_MKFS_REISER 0
 #define IF_MKFS_REISER(...)
 #define IF_NOT_MKFS_REISER(...) __VA_ARGS__
-#undef CONFIG_MKFS_VFAT
-#define ENABLE_MKFS_VFAT 0
-#define IF_MKFS_VFAT(...)
-#define IF_NOT_MKFS_VFAT(...) __VA_ARGS__
+#define CONFIG_MKFS_VFAT 1
+#define ENABLE_MKFS_VFAT 1
+#define IF_MKFS_VFAT(...) __VA_ARGS__
+#define IF_NOT_MKFS_VFAT(...)
 #define CONFIG_GETOPT 1
 #define ENABLE_GETOPT 1
 #define IF_GETOPT(...) __VA_ARGS__
