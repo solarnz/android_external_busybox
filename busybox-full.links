@@ -53,6 +53,9 @@
 /bin/fold
 /bin/free
 /sbin/freeramdisk
+/bin/fsync
+/bin/ftpget
+/bin/ftpput
 /bin/fuser
 /bin/getopt
 /bin/grep
@@ -62,6 +65,8 @@
 /bin/hexdump
 /bin/id
 /sbin/ifconfig
+/sbin/ifdown
+/sbin/ifup
 /sbin/insmod
 /bin/iostat
 /bin/install
