@@ -893,7 +893,8 @@ static int sortcmp(const void *a, const void *b)
 		dif = S_ISDIR(d2->dn_mode) - S_ISDIR(d1->dn_mode);
 	} else
 	if (sort_opts == SORT_VERSION) {
-		dif = strverscmp(d1->name, d2->name);
+//		dif = strverscmp(d1->name, d2->name);
+		dif = (d2->dn_mtime - d1->dn_mtime);
 	} else
 	if (sort_opts == SORT_EXT) {
 		dif = strcmp(strchrnul(d1->name, '.'), strchrnul(d2->name, '.'));
