@@ -182,11 +182,10 @@ LIST_LONG       = LIST_MODEBITS | LIST_NLINKS | LIST_ID_NAME | LIST_SIZE | \
 /* -Q       GNU option, busybox always supports */
 /* -k       SELinux option, busybox always supports (ignores if !SELinux) */
 /*          Std has -k which means "show sizes in kbytes" */
-/* -FLHRctur Std options, busybox optionally supports */
-/* -p       Std option, busybox optionally supports */
-/*          Not fully compatible - we show not only '/' but other chars too */
+/* -LHRctur Std options, busybox optionally supports */
+/* -Fp      Std options, busybox optionally supports */
 /* -SXvhTw  GNU options, busybox optionally supports */
-/*          -T TABWIDTH is ignored (we don't use tabs on output) */
+/* -T WIDTH Ignored (we don't use tabs on output) */
 /* -KZ      SELinux mandated options, busybox optionally supports */
 /*          (coreutils 8.4 has no -K, remove it?) */
 /* -e       I think we made this one up (looks similar to GNU --full-time) */
@@ -880,19 +879,27 @@ static int sortcmp(const void *a, const void *b)
 	// instead of branch forest
 	if (sort_opts == SORT_SIZE) {
 		dif = (d2->dn_size - d1->dn_size);
-	} else if (sort_opts == SORT_ATIME) {
+	} else
+	if (sort_opts == SORT_ATIME) {
 		dif = (d2->dn_atime - d1->dn_atime);
-	} else if (sort_opts == SORT_CTIME) {
+	} else
+	if (sort_opts == SORT_CTIME) {
 		dif = (d2->dn_ctime - d1->dn_ctime);
-	} else if (sort_opts == SORT_MTIME) {
+	} else
+	if (sort_opts == SORT_MTIME) {
 		dif = (d2->dn_mtime - d1->dn_mtime);
-	} else if (sort_opts == SORT_DIR) {
+	} else
+	if (sort_opts == SORT_DIR) {
 		dif = S_ISDIR(d2->dn_mode) - S_ISDIR(d1->dn_mode);
-		/* } else if (sort_opts == SORT_VERSION) { */
-		/* } else if (sort_opts == SORT_EXT) { */
+	} else
+	if (sort_opts == SORT_VERSION) {
+		dif = strverscmp(d1->name, d2->name);
+	} else
+	if (sort_opts == SORT_EXT) {
+		dif = strcmp(strchrnul(d1->name, '.'), strchrnul(d2->name, '.'));
 	}
 	if (dif == 0) {
-		/* sort by name, or tie_breaker for other sorts */
+		/* sort by name, use as tie breaker for other sorts */
 		if (ENABLE_LOCALE_SUPPORT)
 			dif = strcoll(d1->name, d2->name);
 		else
