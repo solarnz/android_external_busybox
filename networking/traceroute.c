@@ -272,8 +272,13 @@
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #if ENABLE_FEATURE_IPV6
-# include <netinet/ip6.h>
-# include <netinet/icmp6.h>
+# ifdef __BIONIC__
+#  include "ipv6/ip6.h"
+#  include "ipv6/icmp6.h"
+# else
+#  include <netinet/ip6.h>
+#  include <netinet/icmp6.h>
+# endif
 # ifndef SOL_IPV6
 #  define SOL_IPV6 IPPROTO_IPV6
 # endif
