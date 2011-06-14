@@ -61,12 +61,11 @@
 /bin/grep
 /bin/gunzip
 /bin/gzip
+/sbin/halt
 /bin/head
 /bin/hexdump
 /bin/id
 /sbin/ifconfig
-/sbin/ifdown
-/sbin/ifup
 /sbin/insmod
 /bin/iostat
 /bin/install
@@ -121,6 +120,7 @@
 /bin/ps
 /bin/pstree
 /bin/pmap
+/sbin/poweroff
 /bin/powertop
 /bin/pwd
 /bin/pwdx
