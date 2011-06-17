@@ -135,14 +135,15 @@ int halt_main(int argc UNUSED_PARAM, char **argv)
 		sync();
 
 #ifdef __BIONIC__
-	char * mode[2];
+	char *mode[3];
 	mode[0] = argv[0];
+	mode[1] = mode[2] = NULL;
 	if (which == 0) {
 		//-p for halt
 		mode[1] = "-p";
 		argc=2;
 	}
-        return reboot_main(argc, mode);
+	return reboot_main(argc, mode);
 #endif
 
 	/* Perform action. */
