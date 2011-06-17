@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Busybox version: 1.19.0-froyo
-# Wed Jun 15 01:25:45 2011
+# Fri Jun 17 07:08:36 2011
 #
 CONFIG_HAVE_DOT_CONFIG=y
 
