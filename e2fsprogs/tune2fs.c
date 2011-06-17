@@ -28,13 +28,13 @@ do { \
 	(sizeof(field) == 4 ? SWAP_LE32(field) : BUG_wrong_field_size())
 
 //usage:#define tune2fs_trivial_usage
-//usage:       "[-c MOUNT_CNT] "
+//usage:       "[-c MAX_MOUNT_COUNT] "
 ////usage:     "[-e errors-behavior] [-g group] "
 //usage:       "[-i DAYS] "
 ////usage:     "[-j] [-J journal-options] [-l] [-s sparse-flag] "
 ////usage:     "[-m reserved-blocks-percent] [-o [^]mount-options[,...]] "
-////usage:     "[-r reserved-blocks-count] [-u user] [-C mount-count] "
-//usage:       "[-C mount-count] "
+////usage:     "[-r reserved-blocks-count] [-u user] "
+//usage:       "[-C MOUNT_COUNT] "
 //usage:       "[-L LABEL] "
 ////usage:     "[-M last-mounted-dir] [-O [^]feature[,...]] "
 ////usage:     "[-T last-check-time] [-U UUID] "
