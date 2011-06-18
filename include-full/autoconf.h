@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-cm71
  */
-#define AUTOCONF_TIMESTAMP "2011-06-17 07:34:19 CEST"
+#define AUTOCONF_TIMESTAMP "2011-06-18 11:27:54 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -744,6 +744,10 @@
 #define ENABLE_FEATURE_FANCY_HEAD 0
 #define IF_FEATURE_FANCY_HEAD(...)
 #define IF_NOT_FEATURE_FANCY_HEAD(...) __VA_ARGS__
+#define CONFIG_GROUPS 1
+#define ENABLE_GROUPS 1
+#define IF_GROUPS(...) __VA_ARGS__
+#define IF_NOT_GROUPS(...)
 #undef CONFIG_HOSTID
 #define ENABLE_HOSTID 0
 #define IF_HOSTID(...)

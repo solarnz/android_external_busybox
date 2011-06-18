@@ -100,7 +100,8 @@ LOCAL_STATIC_LIBRARIES += libclearsilverregex libcutils libc libm
 include $(BUILD_STATIC_LIBRARY)
 
 
-# Build a static busybox for bootmenu
+# Build a static busybox (sample, no more used)
+ifeq (1,0)
 
 include $(CLEAR_VARS)
 BUSYBOX_CONFIG:=full
@@ -126,3 +127,4 @@ LOCAL_UNSTRIPPED_PATH := $(PRODUCT_OUT)/symbols/utilities
 LOCAL_MODULE_STEM := busybox
 include $(BUILD_EXECUTABLE)
 
+endif
