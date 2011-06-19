@@ -21,14 +21,14 @@ extern int id_main(int argc, char **argv);
 int groups_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
 int groups_main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 {
+	char *id_argv[3];
+
 	if (argv[1])
 		bb_show_usage();
 
-	char *id_argv[4];
 	id_argv[0] = xstrdup("id");
-	id_argv[1] = xstrdup("-G");
-	id_argv[2] = xstrdup("-n");
-	id_argv[3] = 0;
+	id_argv[1] = xstrdup("-Gn");
+	id_argv[2] = 0;
 
-	return id_main(3, id_argv);
+	return id_main(2, id_argv);
 }
