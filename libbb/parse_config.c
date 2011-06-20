@@ -83,55 +83,60 @@ parser_t* FAST_FUNC config_open(const char *filename)
 	return config_open2(filename, fopen_or_warn_stdin);
 }
 
+static void config_free_data(parser_t *parser)
+{
+	free(parser->line);
+	parser->line = NULL;
+	if (PARSE_KEEP_COPY) { /* compile-time constant */
+		free(parser->data);
+		parser->data = NULL;
+	}
+}
+
 void FAST_FUNC config_close(parser_t *parser)
 {
 	if (parser) {
-		if (PARSE_KEEP_COPY) /* compile-time constant */
-			free(parser->data);
+		config_free_data(parser);
 		fclose(parser->fp);
-		free(parser->line);
-		free(parser->nline);
 		free(parser);
 	}
 }
 
-/* This function reads an entire line from a text file,
- * up to a newline, exclusive.
+/* This function reads an entire line from a text file, up to a newline
+ * or NUL byte, exclusive.  It returns a malloc'ed char*.
+ * *lineno is incremented for each line.
  * Trailing '\' is recognized as line continuation.
- * Returns -1 if EOF/error.
+ * Returns NULL if EOF/error.
  */
-static int get_line_with_continuation(parser_t *parser)
+static char* get_line_with_continuation(FILE *file, int *lineno)
 {
-	ssize_t len, nlen;
-	char *line;
+	int ch;
+	unsigned idx = 0;
+	char *linebuf = NULL;
 
-	len = getline(&parser->line, &parser->line_alloc, parser->fp);
-	if (len <= 0)
-		return len;
-
-	line = parser->line;
-	for (;;) {
-		parser->lineno++;
-		if (line[len - 1] == '\n')
-			len--;
-		if (len == 0 || line[len - 1] != '\\')
-			break;
-		len--;
-
-		nlen = getline(&parser->nline, &parser->nline_alloc, parser->fp);
-		if (nlen <= 0)
-			break;
-
-		if (parser->line_alloc < len + nlen + 1) {
-			parser->line_alloc = len + nlen + 1;
-			line = parser->line = xrealloc(line, parser->line_alloc);
+	while ((ch = getc(file)) != EOF) {
+		/* grow the line buffer as necessary */
+		if (!(idx & 0xff))
+			linebuf = xrealloc(linebuf, idx + 0x101);
+		if (ch == '\n')
+			ch = '\0';
+		linebuf[idx] = (char) ch;
+		if (ch == '\0') {
+			(*lineno)++;
+			if (idx == 0 || linebuf[idx-1] != '\\')
+				break;
+			idx--; /* go back to '/' */
+			continue;
 		}
-		memcpy(&line[len], parser->nline, nlen);
-		len += nlen;
+		idx++;
 	}
-
-	line[len] = '\0';
-	return len;
+	if (ch == EOF) {
+		/* handle corner case when the file is not ended with '\n' */
+		(*lineno)++;
+		if (linebuf)
+			linebuf[idx] = '\0';
+	}
+	return linebuf;
 }
 
 
@@ -171,14 +176,15 @@ int FAST_FUNC config_read(parser_t *parser, char **tokens, unsigned flags, const
 	ntokens = (uint8_t)flags;
 	mintokens = (uint8_t)(flags >> 8);
 
- again:
+again:
 	memset(tokens, 0, sizeof(tokens[0]) * ntokens);
+	config_free_data(parser);
 
 	/* Read one line (handling continuations with backslash) */
-	if (get_line_with_continuation(parser) < 0)
+	line = get_line_with_continuation(parser->fp, &parser->lineno);
+	if (line == NULL)
 		return 0;
-
-	line = parser->line;
+	parser->line = line;
 
 	/* Skip token in the start of line? */
 	if (flags & PARSE_TRIM)
@@ -187,10 +193,8 @@ int FAST_FUNC config_read(parser_t *parser, char **tokens, unsigned flags, const
 	if (line[0] == '\0' || line[0] == delims[0])
 		goto again;
 
-	if (flags & PARSE_KEEP_COPY) {
-		free(parser->data);
+	if (flags & PARSE_KEEP_COPY)
 		parser->data = xstrdup(line);
-	}
 
 	/* Tokenize the line */
 	t = 0;
@@ -236,6 +240,8 @@ int FAST_FUNC config_read(parser_t *parser, char **tokens, unsigned flags, const
 				parser->lineno, t, mintokens);
 		if (flags & PARSE_MIN_DIE)
 			xfunc_die();
+		if (flags & PARSE_KEEP_COPY)
+			free(parser->data);
 		goto again;
 	}
 
