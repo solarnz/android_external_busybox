@@ -22,6 +22,7 @@ int groups_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
 int groups_main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 {
 	char *id_argv[3];
+	int ret;
 
 	if (argv[1])
 		bb_show_usage();
@@ -30,5 +31,10 @@ int groups_main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 	id_argv[1] = xstrdup("-Gn");
 	id_argv[2] = 0;
 
-	return id_main(2, id_argv);
+	ret = id_main(2, id_argv);
+
+	xfree(id_argv[1]);
+	xfree(id_argv[0]);
+
+	return ret;
 }
