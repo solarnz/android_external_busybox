@@ -177,6 +177,7 @@ int sysinfo(struct sysinfo* info);
  * But don't define foo to foo_unlocked if foo_unlocked
  * is a macro (it might be defined back to foo!).
  */
+#ifndef __BIONIC__
 #ifndef getc_unlocked
 # undef  getc
 # define getc(stream) getc_unlocked(stream)
@@ -209,7 +210,7 @@ int sysinfo(struct sysinfo* info);
 # undef  fputs
 # define fputs(s, stream) fputs_unlocked(s, stream)
 #endif
-
+#endif
 
 /* Make all declarations hidden (-fvisibility flag only affects definitions) */
 /* (don't include system headers after this until corresponding pop!) */
