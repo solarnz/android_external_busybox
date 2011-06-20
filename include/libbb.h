@@ -173,6 +173,44 @@ int sysinfo(struct sysinfo* info);
 #endif
 
 
+/* Busybox does not use threads, we can speed up stdio.
+ * But don't define foo to foo_unlocked if foo_unlocked
+ * is a macro (it might be defined back to foo!).
+ */
+#ifndef getc_unlocked
+# undef  getc
+# define getc(stream) getc_unlocked(stream)
+#endif
+#ifndef getchar_unlocked
+# undef  getchar
+# define getchar() getchar_unlocked()
+#endif
+#ifndef putc_unlocked
+# undef  putc
+# define putc(c, stream) putc_unlocked(c, stream)
+#endif
+#ifndef putchar_unlocked
+# undef  putchar
+# define putchar(c) putchar_unlocked(c)
+#endif
+#ifndef fgetc_unlocked
+# undef  fgetc
+# define fgetc(stream) fgetc_unlocked(stream)
+#endif
+#ifndef fputc_unlocked
+# undef  fputc
+# define fputc(c, stream) fputc_unlocked(c, stream)
+#endif
+#ifndef fgets_unlocked
+# undef  fgets
+# define fgets(s, n, stream) fgets_unlocked(s, n, stream)
+#endif
+#ifndef fputs_unlocked
+# undef  fputs
+# define fputs(s, stream) fputs_unlocked(s, stream)
+#endif
+
+
 /* Make all declarations hidden (-fvisibility flag only affects definitions) */
 /* (don't include system headers after this until corresponding pop!) */
 PUSH_AND_SET_FUNCTION_VISIBILITY_TO_HIDDEN
@@ -1206,8 +1244,9 @@ enum {
 };
 typedef struct parser_t {
 	FILE *fp;
-	char *line;
 	char *data;
+	char *line, *nline;
+	size_t line_alloc, nline_alloc;
 	int lineno;
 } parser_t;
 parser_t* config_open(const char *filename) FAST_FUNC;
@@ -1567,13 +1606,6 @@ enum {
 	PSSCAN_NICE     = (1 << 20) * ENABLE_FEATURE_PS_ADDITIONAL_COLUMNS,
 	PSSCAN_RUIDGID  = (1 << 21) * ENABLE_FEATURE_PS_ADDITIONAL_COLUMNS,
 	PSSCAN_TASKS	= (1 << 22) * ENABLE_FEATURE_SHOW_THREADS,
-	/* These are all retrieved from proc/NN/stat in one go: */
-	PSSCAN_STAT     = PSSCAN_PPID | PSSCAN_PGID | PSSCAN_SID
-	/**/            | PSSCAN_COMM | PSSCAN_STATE
-	/**/            | PSSCAN_VSZ | PSSCAN_RSS
-	/**/            | PSSCAN_STIME | PSSCAN_UTIME | PSSCAN_START_TIME
-	/**/            | PSSCAN_TTY | PSSCAN_NICE
-	/**/            | PSSCAN_CPU
 };
 //procps_status_t* alloc_procps_scan(void) FAST_FUNC;
 void free_procps_scan(procps_status_t* sp) FAST_FUNC;
