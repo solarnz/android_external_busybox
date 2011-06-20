@@ -33,8 +33,8 @@ int groups_main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 
 	ret = id_main(2, id_argv);
 
-	xfree(id_argv[1]);
-	xfree(id_argv[0]);
+	free(id_argv[1]);
+	free(id_argv[0]);
 
 	return ret;
 }
