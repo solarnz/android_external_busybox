@@ -49,6 +49,7 @@
 /bin/fuser
 /bin/getopt
 /bin/grep
+/bin/groups
 /bin/gunzip
 /bin/gzip
 /bin/head
