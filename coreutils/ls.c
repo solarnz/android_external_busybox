@@ -894,8 +894,7 @@ static int sortcmp(const void *a, const void *b)
 	} else
 #if defined(HAVE_STRVERSCMP) && HAVE_STRVERSCMP == 1
 	if (sort_opts == SORT_VERSION) {
-//		dif = strverscmp(d1->name, d2->name);
-		dif = (d2->dn_mtime - d1->dn_mtime);
+		dif = strverscmp(d1->name, d2->name);
 	} else
 #endif
 	if (sort_opts == SORT_EXT) {
