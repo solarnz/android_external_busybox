@@ -272,9 +272,8 @@ config FEATURE_FANCY_HEAD
 config GROUPS
 	bool "groups"
 	default y
-	depends on ID
 	help
-	  Print the group names associated with the current user id
+	  Print the group names associated with current user id.
 
 config HOSTID
 	bool "hostid"
@@ -282,6 +281,12 @@ config HOSTID
 	help
 	  hostid prints the numeric identifier (in hexadecimal) for
 	  the current host.
+
+config ID
+	bool "id"
+	default y
+	help
+	  id displays the current user and group ID names.
 
 config INSTALL
 	bool "install"
