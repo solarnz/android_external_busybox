@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-froyo
  */
-#define AUTOCONF_TIMESTAMP "2011-06-10 22:49:08 CEST"
+#define AUTOCONF_TIMESTAMP "2011-06-21 20:18:40 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -572,6 +572,14 @@
 #define ENABLE_FEATURE_DATE_COMPAT 1
 #define IF_FEATURE_DATE_COMPAT(...) __VA_ARGS__
 #define IF_NOT_FEATURE_DATE_COMPAT(...)
+#define CONFIG_ID 1
+#define ENABLE_ID 1
+#define IF_ID(...) __VA_ARGS__
+#define IF_NOT_ID(...)
+#define CONFIG_GROUPS 1
+#define ENABLE_GROUPS 1
+#define IF_GROUPS(...) __VA_ARGS__
+#define IF_NOT_GROUPS(...)
 #define CONFIG_TEST 1
 #define ENABLE_TEST 1
 #define IF_TEST(...) __VA_ARGS__
@@ -744,6 +752,10 @@
 #define ENABLE_FEATURE_FANCY_HEAD 0
 #define IF_FEATURE_FANCY_HEAD(...)
 #define IF_NOT_FEATURE_FANCY_HEAD(...) __VA_ARGS__
+#define CONFIG_GROUPS 1
+#define ENABLE_GROUPS 1
+#define IF_GROUPS(...) __VA_ARGS__
+#define IF_NOT_GROUPS(...)
 #undef CONFIG_HOSTID
 #define ENABLE_HOSTID 0
 #define IF_HOSTID(...)
