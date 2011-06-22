@@ -759,7 +759,7 @@ static const char bbconfig_config[] ALIGN1 =
 "CONFIG_MPSTAT=y\n"
 "# CONFIG_NMETER is not set\n"
 "CONFIG_PMAP=y\n"
-"CONFIG_POWERTOP=y\n"
+"# CONFIG_POWERTOP is not set\n"
 "CONFIG_PSTREE=y\n"
 "CONFIG_PWDX=y\n"
 "# CONFIG_SMEMCAP is not set\n"

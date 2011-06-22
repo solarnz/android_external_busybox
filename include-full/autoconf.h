@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-cm71
  */
-#define AUTOCONF_TIMESTAMP "2011-06-21 20:40:36 CEST"
+#define AUTOCONF_TIMESTAMP "2011-06-22 16:56:17 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -3128,10 +3128,10 @@
 #define ENABLE_PMAP 1
 #define IF_PMAP(...) __VA_ARGS__
 #define IF_NOT_PMAP(...)
-#define CONFIG_POWERTOP 1
-#define ENABLE_POWERTOP 1
-#define IF_POWERTOP(...) __VA_ARGS__
-#define IF_NOT_POWERTOP(...)
+#undef CONFIG_POWERTOP
+#define ENABLE_POWERTOP 0
+#define IF_POWERTOP(...)
+#define IF_NOT_POWERTOP(...) __VA_ARGS__
 #define CONFIG_PSTREE 1
 #define ENABLE_PSTREE 1
 #define IF_PSTREE(...) __VA_ARGS__
