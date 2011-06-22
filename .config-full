@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Busybox version: 1.19.0-cm71
-# Tue Jun 21 20:40:36 2011
+# Wed Jun 22 16:56:17 2011
 #
 CONFIG_HAVE_DOT_CONFIG=y
 
@@ -877,7 +877,7 @@ CONFIG_IOSTAT=y
 CONFIG_MPSTAT=y
 # CONFIG_NMETER is not set
 CONFIG_PMAP=y
-CONFIG_POWERTOP=y
+# CONFIG_POWERTOP is not set
 CONFIG_PSTREE=y
 CONFIG_PWDX=y
 # CONFIG_SMEMCAP is not set

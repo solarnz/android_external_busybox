@@ -122,7 +122,6 @@
 /bin/pstree
 /bin/pmap
 /sbin/poweroff
-/bin/powertop
 /bin/pwd
 /bin/pwdx
 /sbin/rdev
