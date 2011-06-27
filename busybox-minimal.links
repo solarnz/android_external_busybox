@@ -102,7 +102,6 @@
 /sbin/rdev
 /bin/readlink
 /bin/realpath
-/sbin/reboot
 /bin/renice
 /bin/reset
 /bin/rev
