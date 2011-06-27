@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-cm71
  */
-#define AUTOCONF_TIMESTAMP "2011-06-27 03:12:14 CEST"
+#define AUTOCONF_TIMESTAMP "2011-06-27 18:38:09 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -1200,38 +1200,6 @@
 #define ENABLE_PATCH 1
 #define IF_PATCH(...) __VA_ARGS__
 #define IF_NOT_PATCH(...)
-#define CONFIG_AWK 1
-#define ENABLE_AWK 1
-#define IF_AWK(...) __VA_ARGS__
-#define IF_NOT_AWK(...)
-#undef CONFIG_FEATURE_AWK_LIBM
-#define ENABLE_FEATURE_AWK_LIBM 0
-#define IF_FEATURE_AWK_LIBM(...)
-#define IF_NOT_FEATURE_AWK_LIBM(...) __VA_ARGS__
-#define CONFIG_CMP 1
-#define ENABLE_CMP 1
-#define IF_CMP(...) __VA_ARGS__
-#define IF_NOT_CMP(...)
-#define CONFIG_DIFF 1
-#define ENABLE_DIFF 1
-#define IF_DIFF(...) __VA_ARGS__
-#define IF_NOT_DIFF(...)
-#define CONFIG_FEATURE_DIFF_LONG_OPTIONS 1
-#define ENABLE_FEATURE_DIFF_LONG_OPTIONS 1
-#define IF_FEATURE_DIFF_LONG_OPTIONS(...) __VA_ARGS__
-#define IF_NOT_FEATURE_DIFF_LONG_OPTIONS(...)
-#define CONFIG_FEATURE_DIFF_DIR 1
-#define ENABLE_FEATURE_DIFF_DIR 1
-#define IF_FEATURE_DIFF_DIR(...) __VA_ARGS__
-#define IF_NOT_FEATURE_DIFF_DIR(...)
-#undef CONFIG_ED
-#define ENABLE_ED 0
-#define IF_ED(...)
-#define IF_NOT_ED(...) __VA_ARGS__
-#define CONFIG_SED 1
-#define ENABLE_SED 1
-#define IF_SED(...) __VA_ARGS__
-#define IF_NOT_SED(...)
 #undef CONFIG_VI
 #define ENABLE_VI 0
 #define IF_VI(...)
@@ -1256,6 +1224,10 @@
 #define ENABLE_FEATURE_VI_SEARCH 0
 #define IF_FEATURE_VI_SEARCH(...)
 #define IF_NOT_FEATURE_VI_SEARCH(...) __VA_ARGS__
+#undef CONFIG_FEATURE_VI_REGEX_SEARCH
+#define ENABLE_FEATURE_VI_REGEX_SEARCH 0
+#define IF_FEATURE_VI_REGEX_SEARCH(...)
+#define IF_NOT_FEATURE_VI_REGEX_SEARCH(...) __VA_ARGS__
 #undef CONFIG_FEATURE_VI_USE_SIGNALS
 #define ENABLE_FEATURE_VI_USE_SIGNALS 0
 #define IF_FEATURE_VI_USE_SIGNALS(...)
@@ -1288,6 +1260,38 @@
 #define ENABLE_FEATURE_VI_OPTIMIZE_CURSOR 0
 #define IF_FEATURE_VI_OPTIMIZE_CURSOR(...)
 #define IF_NOT_FEATURE_VI_OPTIMIZE_CURSOR(...) __VA_ARGS__
+#define CONFIG_AWK 1
+#define ENABLE_AWK 1
+#define IF_AWK(...) __VA_ARGS__
+#define IF_NOT_AWK(...)
+#undef CONFIG_FEATURE_AWK_LIBM
+#define ENABLE_FEATURE_AWK_LIBM 0
+#define IF_FEATURE_AWK_LIBM(...)
+#define IF_NOT_FEATURE_AWK_LIBM(...) __VA_ARGS__
+#define CONFIG_CMP 1
+#define ENABLE_CMP 1
+#define IF_CMP(...) __VA_ARGS__
+#define IF_NOT_CMP(...)
+#define CONFIG_DIFF 1
+#define ENABLE_DIFF 1
+#define IF_DIFF(...) __VA_ARGS__
+#define IF_NOT_DIFF(...)
+#define CONFIG_FEATURE_DIFF_LONG_OPTIONS 1
+#define ENABLE_FEATURE_DIFF_LONG_OPTIONS 1
+#define IF_FEATURE_DIFF_LONG_OPTIONS(...) __VA_ARGS__
+#define IF_NOT_FEATURE_DIFF_LONG_OPTIONS(...)
+#define CONFIG_FEATURE_DIFF_DIR 1
+#define ENABLE_FEATURE_DIFF_DIR 1
+#define IF_FEATURE_DIFF_DIR(...) __VA_ARGS__
+#define IF_NOT_FEATURE_DIFF_DIR(...)
+#undef CONFIG_ED
+#define ENABLE_ED 0
+#define IF_ED(...)
+#define IF_NOT_ED(...) __VA_ARGS__
+#define CONFIG_SED 1
+#define ENABLE_SED 1
+#define IF_SED(...) __VA_ARGS__
+#define IF_NOT_SED(...)
 #define CONFIG_FEATURE_ALLOW_EXEC 1
 #define ENABLE_FEATURE_ALLOW_EXEC 1
 #define IF_FEATURE_ALLOW_EXEC(...) __VA_ARGS__
