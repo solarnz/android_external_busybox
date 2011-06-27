@@ -161,7 +161,10 @@
 //usage:	)
 //usage:     "\n	-H	Short help regarding available features"
 
+#if ENABLE_FEATURE_VI_REGEX_SEARCH
 #include <regex.h>
+#endif
+
 #include "libbb.h"
 
 /* the CRASHME code is unmaintained, and doesn't currently build */
