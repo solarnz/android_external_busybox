@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Busybox version: 1.19.0-froyo
-# Tue Jun 21 21:03:41 2011
+# Mon Jun 27 03:12:14 2011
 #
 CONFIG_HAVE_DOT_CONFIG=y
 
@@ -217,9 +217,7 @@ CONFIG_FOLD=y
 # CONFIG_FSYNC is not set
 CONFIG_HEAD=y
 # CONFIG_FEATURE_FANCY_HEAD is not set
-CONFIG_GROUPS=y
 # CONFIG_HOSTID is not set
-CONFIG_ID=y
 CONFIG_INSTALL=y
 # CONFIG_FEATURE_INSTALL_LONG_OPTIONS is not set
 CONFIG_LN=y

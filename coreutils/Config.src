@@ -269,12 +269,6 @@ config FEATURE_FANCY_HEAD
 	help
 	  This enables the head options (-c, -q, and -v).
 
-config GROUPS
-	bool "groups"
-	default y
-	help
-	  Print the group names associated with current user id.
-
 config HOSTID
 	bool "hostid"
 	default y

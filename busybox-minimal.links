@@ -101,6 +101,7 @@
 /sbin/rdev
 /bin/readlink
 /bin/realpath
+/sbin/reboot
 /bin/renice
 /bin/reset
 /bin/rev
@@ -120,6 +121,7 @@
 /bin/sort
 /bin/split
 /bin/stat
+/bin/strings
 /bin/stty
 /sbin/swapoff
 /sbin/swapon

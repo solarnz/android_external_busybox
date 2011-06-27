@@ -17,7 +17,7 @@ libpwdgrp/uidgid_get.c
 
 
 miscutils/bbconfig.c miscutils/dc.c miscutils/devmem.c miscutils/less.c miscutils/makedevs.c miscutils/mountpoint.c miscutils/nandwrite.c
-miscutils/setserial.c miscutils/setsid.c miscutils/time.c
+miscutils/setserial.c miscutils/setsid.c miscutils/strings.c miscutils/time.c
 modutils/modinfo.c modutils/modprobe-small.c modutils/modutils.c
 
 
