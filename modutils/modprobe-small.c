@@ -532,7 +532,7 @@ static void process_module(char *name, const char *cmdline_options)
 
 	dbg1_error_msg("already_loaded:%d is_rmmod:%d", already_loaded(name), is_rmmod);
 	if (already_loaded(name) != is_rmmod) {
-		dbg1_error_msg("nothing to do for '%s'", name);
+		bb_error_msg("nothing to do for '%s'", name);
 		return;
 	}
 
@@ -764,7 +764,7 @@ int modprobe_main(int argc UNUSED_PARAM, char **argv)
 	/* Prevent ugly corner cases with no modules at all */
 	modinfo = xzalloc(sizeof(modinfo[0]));
 
-	if ('i' != applet0) { /* not insmod */
+	if ('i' != applet0 && 'r' != applet0) { /* not insmod and not rmmod */
 		/* Goto modules directory */
 		xchdir(CONFIG_DEFAULT_MODULES_DIR);
 	}
@@ -820,7 +820,7 @@ int modprobe_main(int argc UNUSED_PARAM, char **argv)
 		option_mask32 |= OPT_r;
 	}
 
-	if ('i' != applet0) { /* not insmod */
+	if ('i' != applet0 && 'r' != applet0) { /* not insmod and not rmmod */
 		if (stat(uts.release, &info) == 0) {
 			/* Goto $VERSION directory */
 			xchdir(uts.release);
