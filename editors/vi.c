@@ -162,7 +162,10 @@
 //usage:     "\n	-H	Short help regarding available features"
 
 #if ENABLE_FEATURE_VI_REGEX_SEARCH
-#include <regex.h>
+# if defined(ANDROID)
+#  include <sys/types.h> /* size_t */
+# endif
+# include <regex.h>
 #endif
 
 #include "libbb.h"
