@@ -351,6 +351,7 @@ typedef unsigned smalluint;
 #define HAVE_STRSIGNAL 1
 #define HAVE_STRVERSCMP 1
 #define HAVE_VASPRINTF 1
+#define HAVE_GETLINE 1
 #define HAVE_XTABS 1
 #define HAVE_MNTENT_H 1
 #define HAVE_NET_ETHERNET_H 1
@@ -414,14 +415,16 @@ typedef unsigned smalluint;
 
 #if defined(ANDROID)
 # undef HAVE_DPRINTF
+# undef HAVE_GETLINE
 # undef HAVE_STPCPY
 # undef HAVE_STRCHRNUL
 # undef HAVE_STRVERSCMP
 # undef HAVE_NET_ETHERNET_H
-#endif
 
-#if defined(__BIONIC__)
 # undef HAVE_FDPRINTF
+# include <sys/types.h> /* ssize_t */
+# include <stdio.h>     /* FILE    */
+
 #endif
 
 /*
@@ -475,8 +478,13 @@ extern char *strsep(char **stringp, const char *delim) FAST_FUNC;
 extern int vasprintf(char **string_ptr, const char *format, va_list p) FAST_FUNC;
 #endif
 
+#ifndef HAVE_GETLINE
+extern ssize_t getline(char **lineptr, size_t *n, FILE *stream) FAST_FUNC;
+#endif
+
 #if defined(__BIONIC__)
 #include "android.h"
 #endif
 
-#endif
+
+#endif /* BB_PLATFORM_H */

@@ -15,8 +15,6 @@
 # include <math.h>
 #endif
 
-#undef HAVE_STPCPY
-
 #define killpg_busybox(P, S) kill(-(P), S)
 
 #define setmntent fopen
