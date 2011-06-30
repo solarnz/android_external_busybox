@@ -420,18 +420,13 @@ typedef unsigned smalluint;
 
 #if defined(ANDROID)
 # undef HAVE_DPRINTF
+# undef HAVE_FDPRINTF
 # undef HAVE_GETLINE
 # undef HAVE_STPCPY
 # undef HAVE_STRCHRNUL
 # undef HAVE_STRVERSCMP
 # undef HAVE_UNLOCKED_LINE_OPS
-# undef HAVE_UNLOCKED_STDIO
 # undef HAVE_NET_ETHERNET_H
-
-# undef HAVE_FDPRINTF
-# include <sys/types.h> /* ssize_t */
-# include <stdio.h>     /* FILE    */
-
 #endif
 
 /*
@@ -486,7 +481,8 @@ extern int vasprintf(char **string_ptr, const char *format, va_list p) FAST_FUNC
 #endif
 
 #ifndef HAVE_GETLINE
-#include <stdio.h> /* for FILE */
+# include <stdio.h> /* for FILE */
+# include <sys/types.h> /* size_t */
 extern ssize_t getline(char **lineptr, size_t *n, FILE *stream) FAST_FUNC;
 #endif
 

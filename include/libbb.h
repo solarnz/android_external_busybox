@@ -188,13 +188,13 @@ int sysinfo(struct sysinfo* info);
 # undef  fputc
 # define fputc(c, stream) putc_unlocked(c, stream)
 #endif
+
 /* Above functions are required by POSIX.1-2008, below ones are extensions */
 #ifdef HAVE_UNLOCKED_LINE_OPS
 # undef  fgets
 # define fgets(s, n, stream) fgets_unlocked(s, n, stream)
 # undef  fputs
 # define fputs(s, stream) fputs_unlocked(s, stream)
-#endif
 #endif
 
 /* Make all declarations hidden (-fvisibility flag only affects definitions) */
