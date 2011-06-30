@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.19.0-cm71
  */
-#define AUTOCONF_TIMESTAMP "2011-06-30 00:51:26 CEST"
+#define AUTOCONF_TIMESTAMP "2011-06-30 06:34:50 CEST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -756,10 +756,6 @@
 #define ENABLE_HOSTID 0
 #define IF_HOSTID(...)
 #define IF_NOT_HOSTID(...) __VA_ARGS__
-#define CONFIG_ID 1
-#define ENABLE_ID 1
-#define IF_ID(...) __VA_ARGS__
-#define IF_NOT_ID(...)
 #define CONFIG_INSTALL 1
 #define ENABLE_INSTALL 1
 #define IF_INSTALL(...) __VA_ARGS__

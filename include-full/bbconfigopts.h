@@ -188,7 +188,6 @@ static const char bbconfig_config[] ALIGN1 =
 "CONFIG_HEAD=y\n"
 "# CONFIG_FEATURE_FANCY_HEAD is not set\n"
 "# CONFIG_HOSTID is not set\n"
-"CONFIG_ID=y\n"
 "CONFIG_INSTALL=y\n"
 "# CONFIG_FEATURE_INSTALL_LONG_OPTIONS is not set\n"
 "CONFIG_LN=y\n"
