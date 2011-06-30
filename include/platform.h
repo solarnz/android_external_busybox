@@ -172,7 +172,13 @@
 # define BB_BIG_ENDIAN 0
 # define BB_LITTLE_ENDIAN 1
 #else
-# error "Can't determine endianness"
+# error
+# error
+# error "Can't determine endianness !"
+# error "DO NOT USE 'MAKE' TO BUILD BIONIC BUSYBOX"
+# error
+# error
+  exit 1
 #endif
 
 #if ULONG_MAX > 0xffffffff
