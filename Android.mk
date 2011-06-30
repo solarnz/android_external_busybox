@@ -1,8 +1,7 @@
 LOCAL_PATH := $(call my-dir)
 
-
-# Make a static library for clearsilver's regex. This prevents multiple
-# symbol definition error.... OR NOT
+# Make a static library for clearsilver's regex.
+# This prevents multiple symbol definition error....
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := ../clearsilver/util/regex/regex.c
 LOCAL_MODULE := libclearsilverregex
@@ -48,6 +47,22 @@ BUSYBOX_CFLAGS = \
 	-D'CONFIG_DEFAULT_MODULES_DIR="$(KERNEL_MODULES_DIR)"' \
 	-D'BB_VER="$(strip $(shell $(SUBMAKE) kernelversion)) $(BUSYBOX_SUFFIX)"' -DBB_BT=AUTOCONF_TIMESTAMP
 
+# execute make clean, make prepare and copy profiles required for normal & static busybox (recovery)
+include $(CLEAR_VARS)
+BUSYBOX_CONFIG := full minimal
+$(BUSYBOX_CONFIG):
+	@echo GENERATE INCLUDES FOR BUSYBOX $@
+	@cd $(LOCAL_PATH) && make clean
+	cp $(LOCAL_PATH)/.config-$@ $(LOCAL_PATH)/.config
+	cd $(LOCAL_PATH) && make prepare
+	cd $(LOCAL_PATH)/include-$@ && ./copy-current.sh
+	cd $(LOCAL_PATH)/include && rm usage_compressed.h
+	cd $(LOCAL_PATH)
+busybox_prepare: $(BUSYBOX_CONFIG)
+LOCAL_MODULE := busybox_prepare
+LOCAL_MODULE_TAGS := eng
+include $(BUILD_STATIC_LIBRARY)
+
 include $(CLEAR_VARS)
 BUSYBOX_CONFIG:=full
 BUSYBOX_SUFFIX:=bionic
@@ -57,7 +72,7 @@ LOCAL_CFLAGS := $(BUSYBOX_CFLAGS)
 LOCAL_MODULE := busybox
 LOCAL_MODULE_TAGS := eng
 LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
-LOCAL_STATIC_LIBRARIES += libclearsilverregex
+LOCAL_STATIC_LIBRARIES += busybox_prepare libclearsilverregex
 include $(BUILD_EXECUTABLE)
 
 BUSYBOX_LINKS := $(shell cat $(LOCAL_PATH)/busybox-$(BUSYBOX_CONFIG).links)
@@ -78,7 +93,6 @@ ALL_DEFAULT_INSTALLED_MODULES += $(SYMLINKS)
 ALL_MODULES.$(LOCAL_MODULE).INSTALLED := \
     $(ALL_MODULES.$(LOCAL_MODULE).INSTALLED) $(SYMLINKS)
 
-
 # Build a static busybox for the recovery image
 include $(CLEAR_VARS)
 BUSYBOX_CONFIG:=minimal
@@ -96,7 +110,7 @@ LOCAL_CFLAGS += \
   -Dgenerate_uuid=busybox_generate_uuid
 LOCAL_MODULE := libbusybox
 LOCAL_MODULE_TAGS := eng
-LOCAL_STATIC_LIBRARIES += libclearsilverregex libcutils libc libm
+LOCAL_STATIC_LIBRARIES += busybox_prepare libclearsilverregex libcutils libc libm
 include $(BUILD_STATIC_LIBRARY)
 
 

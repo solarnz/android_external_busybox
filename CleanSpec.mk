@@ -38,13 +38,14 @@
 # NEWER CLEAN STEPS MUST BE AT THE END OF THE LIST
 # ************************************************
 
+$(call add-clean-step, rm -rf $(PRODUCT_OUT)/obj/STATIC_LIBRARIES/busybox_prepare)
+
 $(call add-clean-step, rm -rf $(PRODUCT_OUT)/obj/EXECUTABLES/busybox_intermediates)
 $(call add-clean-step, rm -rf $(PRODUCT_OUT)/obj/STATIC_LIBRARIES/libbusybox_intermediates)
 
 $(call add-clean-step, rm -rf $(PRODUCT_OUT)/obj/UTILITY_EXECUTABLES/bootmenu_busybox_intermediates)
 
 $(call add-clean-step, rm $(PRODUCT_OUT)/symbols/system/xbin/busybox)
-$(call add-clean-step, rm $(PRODUCT_OUT)/symbols/utilities/busybox)
 
 # ************************************************
 # NEWER CLEAN STEPS MUST BE AT THE END OF THE LIST
