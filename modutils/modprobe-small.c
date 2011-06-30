@@ -532,7 +532,7 @@ static void process_module(char *name, const char *cmdline_options)
 
 	dbg1_error_msg("already_loaded:%d is_rmmod:%d", already_loaded(name), is_rmmod);
 	if (already_loaded(name) != is_rmmod) {
-		bb_error_msg("nothing to do for '%s'", name);
+		dbg1_error_msg("nothing to do for '%s'", name);
 		return;
 	}
 
