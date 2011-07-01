@@ -36,7 +36,7 @@ int    stime(time_t *) 25
 int    swapon(const char *, int)       87
 int    swapoff(const char *)   115
 */
-int              stime (time_t *);
+//int              stime (time_t *);
 int              swapon (const char *, int);
 int              swapoff (const char *);
 
@@ -52,9 +52,9 @@ void endusershell(void);
 
 struct mntent;
 struct __sFILE;
-int addmntent(struct __sFILE *, const struct mntent *);
-struct mntent *getmntent_r(struct __sFILE *fp, struct mntent *mnt, char *buf, int buflen);
-const char *hasmntopt(const struct mntent *, const char *);
+//int addmntent(struct __sFILE *, const struct mntent *);
+//struct mntent *getmntent_r(struct __sFILE *fp, struct mntent *mnt, char *buf, int buflen);
+//const char *hasmntopt(const struct mntent *, const char *);
 
 #define MNTOPT_NOAUTO "noauto"
 
